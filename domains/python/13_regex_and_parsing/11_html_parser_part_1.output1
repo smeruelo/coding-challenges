@@ -1,0 +1,13 @@
+Start : html
+Start : head
+Start : title
+End   : title
+End   : head
+Start : body
+-> data-modal-target > None
+-> class > 1
+Start : h1
+End   : h1
+Empty : br
+End   : body
+End   : html

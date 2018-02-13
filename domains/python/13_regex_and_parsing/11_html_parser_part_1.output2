@@ -1,0 +1,5 @@
+Empty : link
+-> rel > stylesheet
+-> type > text/css
+-> media > screen, projection
+-> href > REGULAR-STYLESHEET.css

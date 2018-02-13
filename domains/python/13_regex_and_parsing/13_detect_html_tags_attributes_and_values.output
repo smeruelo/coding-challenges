@@ -1,0 +1,10 @@
+head
+title
+object
+-> type > application/x-flash
+-> data > your-file.swf
+-> width > 0
+-> height > 0
+param
+-> name > quality
+-> value > high

@@ -1,0 +1,7 @@
+>>> Multi-line Comment
+[if IE 9]>IE9-specific content
+<![endif]
+>>> Data
+ Welcome to HackerRank
+>>> Single-line Comment
+[if IE 9]>IE9-specific content<![endif]

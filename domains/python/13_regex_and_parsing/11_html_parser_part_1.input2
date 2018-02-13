@@ -1,0 +1,12 @@
+11
+<!--[if !IE 6]><!-->
+  <link rel="stylesheet" type="text/css" media="screen, projection" href="REGULAR-STYLESHEET.css" />
+<!--<![endif]-->
+
+<!--[if gte IE 7]>
+  <link rel="stylesheet" type="text/css" media="screen, projection" href="REGULAR-STYLESHEET.css" />
+<![endif]-->
+
+<!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" media="screen, projection" href="http://universal-ie6-css.googlecode.com/files/ie6.0.3.css" />
+<![endif]-->
