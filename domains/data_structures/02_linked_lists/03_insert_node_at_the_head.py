@@ -20,17 +20,6 @@ def create_list(lst):
             return Node(lst[i], aux(i + 1))
     return aux(0)
 
-def insert_tail(head, data):
-    new_node = Node(data, None)
-    if head:
-        current_node = head
-        while current_node.next:
-            current_node = current_node.next
-        current_node.next = new_node
-        return head
-    else:
-        return new_node
-
 def insert_head(head, data):
     return Node(data, head)
 
