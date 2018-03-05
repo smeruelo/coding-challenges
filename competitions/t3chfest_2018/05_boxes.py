@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 
+# Array containing boxes' sizes. Boxes should be arranged sorted in non-decreasing order.
+# Given an array, find the size of the minimum sequence that should be removed
+# so the remaining boxes are in such an order
+# Example: [1, 2, 3, 1, 1, 5]
+# Either we remove (2, 3) or (1, 1). In any case, the elements to be removed are two
+
 def solution(A):
     if A == []:
         return 0

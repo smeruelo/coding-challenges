@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 
+# There are 3 possible operations on a string:
+# - insert one character
+# - delete one character
+# - swap two characters
+# Given two strings, if one of those operations would convert one string into the other, say which one
+# If they're already equal, say 'nothing'.
+# If conversion can't be made with one operation, say 'impossible'
+
 def solution(S, T):
     if S == T:
         return "NOTHING"

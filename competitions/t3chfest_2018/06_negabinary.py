@@ -1,5 +1,15 @@
 #!/usr/bin/python3
 
+# We are given a really big string that represents a negabinary number A
+# (https://en.wikipedia.org/wiki/Negative_base)
+# We must return -A, also in negabinary format
+
+# https://math.stackexchange.com/questions/2303280/proof-of-negative-negabinary-addition-formula
+# -(a + b) = g(f(a) + f(b) + 1)  --------->  -a = g(f(a) + f(0) + 1)
+#                                  b = 0
+# f = negate odd bits
+# g = negate even bits
+
 def solution(A):
     A.append(0)
     for i in range(1, len(A), 2):
