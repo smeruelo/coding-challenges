@@ -38,15 +38,3 @@ def solution(A):
         maximum = max(maximum, boxes)
         print(begin, end, '-->', len(A) - boxes)
     return len(A) - maximum
-
-
-if __name__ == '__main__':
-    # Some tests
-    print(solution([1, 2, 3, 1, 1, 5]), 2); print()
-    print(solution([]), 0); print()
-    print(solution([2, 1]), 1); print()
-    print(solution([6, 1, 3, 8]), 1); print()
-    print(solution([7, 10, 5, 6, 1]), 3); print()
-    print(solution([2, 2, 9, 8, 3, 5, 9, 8, 10, 10, 10, 8, 3, 5, 5, 1, 6, 1, 7, 8]), 16); print()
-    print(solution([3, 2, 5, 7]), 1); print()
-    print(solution([2, 5, 7]), 0); print()
