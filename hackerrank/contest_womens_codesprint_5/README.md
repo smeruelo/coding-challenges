@@ -1,0 +1,1 @@
+[Women's CodeSprint 5](https://www.hackerrank.com/contests/womens-codesprint-5) contest at HackerRank (2018.03.09)

@@ -1,0 +1,1 @@
+[ABC 042](https://abc042.contest.atcoder.jp/assignments) contest at AtCoder
