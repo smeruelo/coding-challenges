@@ -31,8 +31,6 @@ def solution(A):
     begin = 0
     previous = -1
     maximum = boxes = len(A) - end
-    print(A)
-    print(begin, end, '-->', len(A) - boxes)
     while A[begin] >= previous:
         if end >= len(A) or A[begin] <= A[end]:
             previous = A[begin]
@@ -42,5 +40,4 @@ def solution(A):
             end += 1
             boxes -= 1
         maximum = max(maximum, boxes)
-        print(begin, end, '-->', len(A) - boxes)
     return len(A) - maximum
