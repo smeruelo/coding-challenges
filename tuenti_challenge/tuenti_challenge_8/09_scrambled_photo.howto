@@ -1,0 +1,4 @@
+Found this tool online: https://www.nayuki.io/page/image-unshredder-by-annealing
+java AnnealImageColumns scrambled-photo-submit-ag45z6b4ce3s5.png out.png 700000000 8000
+Seen a QR code shreded into 10 pieces or so
+Then gimp and finish manually
