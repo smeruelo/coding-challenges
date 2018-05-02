@@ -1,5 +1,5 @@
 * [AtCoder](https://atcoder.jp)
 * [HackerRank](https://www.hackerrank.com)
 * [Project Euler](https://projecteuler.net)
-* [t3chfest](https://t3chfest.uc3m.es)
+* [T3chfest](https://t3chfest.uc3m.es)
 * [Tuenti Challenge](https://contest.tuenti.net/)
