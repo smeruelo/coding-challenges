@@ -1,0 +1,11 @@
+10
+push 15
+pop
+push -51
+pop
+push 41
+pop
+push -76
+push 51
+push -10
+inc 1 -49

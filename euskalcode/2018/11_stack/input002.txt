@@ -1,0 +1,9 @@
+8
+push -36
+push 20
+pop
+push -9
+pop
+push -53
+pop
+inc 1 -17
