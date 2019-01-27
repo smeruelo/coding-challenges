@@ -1,6 +1,7 @@
 * [Advent of Code](https://adventofcode.com)
 * [AtCoder](https://atcoder.jp)
 * [euskal{code}](https://www.euskalcode.com)
+* [exercism](https://exercism.io)
 * [HackerRank](https://www.hackerrank.com)
 * [Project Euler](https://projecteuler.net)
 * [T3chFest](https://t3chfest.uc3m.es)
