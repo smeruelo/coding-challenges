@@ -1,3 +1,7 @@
+#!/usr/bin/python3
+# https://exercism.io/my/solutions/bd92c84c05c34eb6ae2e7802880eda63
+
+
 class SpaceAge(object):
     EARTH_YEAR_SECONDS = 31557600
     PLANETS_YEARS = {'mercury': 0.2408467,
