@@ -1,3 +1,9 @@
+#!/usr/bin/python3
+# https://exercism.io/my/solutions/69e228fba81a47139e34d794ef9087c3
+
+from itertools import takewhile
+from textwrap import wrap
+
 PROTEINS = {
     'AUG': 'Methionine',
     'UUU': 'Phenylalanine',
@@ -19,13 +25,11 @@ PROTEINS = {
 }
 
 
+def is_not_stop(s):
+    return s != 'STOP'
+
+
 def proteins(strand):
-    codons = [strand[i:i+3] for i in range(0, len(strand), 3)]
+    codons = wrap(strand, 3)
     translation = [PROTEINS[c] for c in codons]
-    output = []
-    for p in translation:
-        if p != 'STOP':
-            output.append(p)
-        else:
-            return output
-    return output
+    return [p for p in takewhile(is_not_stop, translation)]
