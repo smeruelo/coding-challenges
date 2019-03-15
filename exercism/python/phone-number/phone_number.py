@@ -13,8 +13,8 @@ class Phone(object):
         self._number = parsed.group(2) + parsed.group(3) + parsed.group(4)
         self._country_code = parsed.group(1)
         self._area_code = parsed.group(2)
-        self._local_number_part_1 = parsed.group(3)
-        self._local_number_part_2 = parsed.group(4)
+        self._exchange_code = parsed.group(3)
+        self._subscriber_number = parsed.group(4)
 
     @property
     def number(self):
@@ -25,4 +25,4 @@ class Phone(object):
         return self._area_code
 
     def pretty(self):
-        return f'({self.area_code}) {self._local_number_part_1}-{self._local_number_part_2}'
+        return f'({self.area_code}) {self._exchange_code}-{self._subscriber_number}'
