@@ -1,60 +1,43 @@
 # task 5
-# Brute force solution, valid only for small values of N
-
-from itertools import combinations
 
 
-def adjacency_list(A, B, cuts):
+def adjacency_list(A, B):
     t = [[] for _ in range(len(A) + 1)]
-    for edge, (node_a, node_b) in enumerate(zip(A, B)):
-        if edge not in cuts:
-            t[node_a].append(node_b)
-            t[node_b].append(node_a)
+    for node_a, node_b in zip(A, B):
+        t[node_a].append(node_b)
+        t[node_b].append(node_a)
     return t
 
 
-def furthest(tree, node):
-    # DFS traverse a tree to find the furthest node from the one given
-
-    visited = set()
-
-    def dfs(node, length):
-        visited.add(node)
-        max_distance = length
-        max_distance_node = node
-        children = set(tree[node]) - visited
-        for child in children:
-            distance_node, distance = dfs(child, length + 1)
-            if distance > max_distance:
-                max_distance = distance
-                max_distance_node = distance_node
-        return(max_distance_node, max_distance)
-
-    return dfs(node, 0)
-
-
-def longest_path(tree, node):
-    # We choose an arbitrary node a in the tree and find the furthest node b from a.
-    # Then we find the furthest node c from b. The diameter is the distance between b and c.
-
-    node_b, _ = furthest(tree, node)
-    node_c, distance = furthest(tree, node_b)
-    return distance
-
-
 def solution(A, B, num_cameras):
-    num_edges = len(A)
-    tree = adjacency_list(A, B, [])
-    shortest_longest_path = longest_path(tree, 0)
+    # Algorithm explained here: https://cs.stackexchange.com/a/93282
 
-    if num_cameras > 0:
-        for combination in combinations(list(range(num_edges)), num_cameras):
-            forest = adjacency_list(A, B, combination)
-            longest = 0
-            for cut in combination:
-                longest_a = longest_path(forest, A[cut])
-                longest_b = longest_path(forest, B[cut])
-                longest = max(longest, longest_a, longest_b)
-            shortest_longest_path = min(shortest_longest_path, longest)
+    def dfs(node, parent, limit):
+        # Returns (_, cuts), where cuts is the number of cameras needed to grant
+        # maximum length of an uncovered path = limit
+        s = 0
+        cuts = c = 0
+        for adj in tree[node]:
+            if adj != parent:
+                r, c = dfs(adj, node, limit)
+                r += 1
+                cuts += c
+                if r + s > limit:
+                    s = min(s, r)
+                    cuts += 1
+                else:
+                    s = max(s, r)
+        return s, cuts
 
-    return shortest_longest_path
+    # Binary search over the results of dfs with different limits.
+    # Algorithm in Laaksonen (page 33, finding the smallest solution)
+    tree = adjacency_list(A, B)
+    x = -1
+    jump = len(A) + 1
+    while jump >= 1:
+        _, cuts = dfs(0, None, x + jump)
+        while not cuts <= num_cameras:
+            x += jump
+            _, cuts = dfs(0, None, x + jump)
+        jump //= 2
+    return x + 1
