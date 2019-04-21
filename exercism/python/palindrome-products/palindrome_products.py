@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+
 def is_palindrome(n):
     return int(str(n)[::-1]) == n
 
@@ -6,14 +9,12 @@ def palindromes(max_factor, min_factor):
     if max_factor < min_factor:
         raise ValueError('Invalid range')
 
-    p = dict()
+    p = defaultdict(set)
     for f1 in range(min_factor, max_factor + 1):
         for f2 in range(f1, max_factor + 1):
             product = f1 * f2
-            if product in p:
+            if is_palindrome(product):
                 p[product].add((f1, f2))
-            elif is_palindrome(product):
-                p[product] = set([(f1, f2)])
     return p
 
 
