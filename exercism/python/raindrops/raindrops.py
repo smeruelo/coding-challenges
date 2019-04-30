@@ -5,5 +5,5 @@
 def raindrops(number):
     factors = [3, 5, 7]
     strings = ['Pling', 'Plang', 'Plong']
-    outputs = [w if number % f == 0 else '' for f, w in zip(factors, strings)]
+    outputs = (w if number % f == 0 else '' for f, w in zip(factors, strings))
     return ''.join(outputs) or str(number)
