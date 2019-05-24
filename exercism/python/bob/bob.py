@@ -1,17 +1,16 @@
-from string import whitespace, ascii_letters, ascii_uppercase
+# https://exercism.io/my/solutions/a3da23b5f2034f9eb2b6b7dcd9902206
 
 
 def is_question(phrase):
-    return '?' in phrase and is_empty(phrase[len(phrase)-phrase[::-1].find('?'):])
+    return not is_empty(phrase) and phrase.strip()[-1] == '?'
 
 
 def is_yell(phrase):
-    return any(map(lambda c: c in ascii_letters, phrase)) and \
-        all(map(lambda c: c not in ascii_letters or c in ascii_uppercase, phrase))
+    return phrase.isupper()
 
 
 def is_empty(phrase):
-    return all(map(lambda c: c in whitespace, phrase))
+    return not phrase.strip()
 
 
 def hey(phrase):
