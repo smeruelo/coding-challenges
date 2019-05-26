@@ -2,11 +2,4 @@
 
 
 def sum_of_multiples(limit, multiples):
-    m = set()
-    i = 1
-    i_multiples = [i * n for n in multiples if n != 0 and i * n < limit]
-    while i_multiples:
-        m.update(i_multiples)
-        i += 1
-        i_multiples = [i * n for n in multiples if n != 0 and i * n < limit]
-    return sum(m)
+    return sum({m for i in multiples if i != 0 for m in range(i, limit, i)})
