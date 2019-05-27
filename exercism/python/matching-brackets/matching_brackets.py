@@ -7,15 +7,12 @@ MATCH = dict(zip(CLOSING, OPENING))
 
 
 def is_paired(string):
-    def aux(index, opened):
-        if index == len(string):
-            return not opened
-        if string[index] in OPENING:
-            return aux(index + 1, opened + string[index])
-        if string[index] in CLOSING:
-            if opened and opened[-1] == MATCH[string[index]]:
-                return aux(index + 1, opened[:-1])
-            return False
-        return aux(index + 1, opened)
-
-    return aux(0, '')
+    opened = []
+    for c in string:
+        if c in OPENING:
+            opened.append(c)
+        if c in CLOSING:
+            if not opened or MATCH[c] != opened[-1]:
+                return False
+            opened.pop()
+    return not opened
