@@ -1,11 +1,13 @@
-from itertools import combinations
+# https://exercism.io/my/solutions/c9fc1c47d12c46f189a86ae583ae861a
 
 
-def is_triplet(triplet):
+def is_pythagorean(triplet):
     a, b, c = triplet
     return a * a + b * b == c * c
 
 
 def triplets_with_sum(sum_of_triplet):
-    combos = combinations(range(sum_of_triplet), 3)
-    return {c for c in combos if sum(c) == sum_of_triplet and is_triplet(c)}
+    return {(a, b, sum_of_triplet - a - b)
+            for a in range(1, sum_of_triplet)
+            for b in range(a + 1, sum_of_triplet - a - 1)
+            if is_pythagorean((a, b, sum_of_triplet - a - b))}
