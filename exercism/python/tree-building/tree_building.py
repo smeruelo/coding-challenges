@@ -30,10 +30,10 @@ def BuildTree(records):
             raise ValueError('Tree is a cycle')
         children[r.parent_id].append(r.record_id)
 
-    def bfs(current):
+    def dfs(current):
         for child in children[current.node_id]:
-            node = bfs(Node(child))
+            node = dfs(Node(child))
             current.children.append(node)
         return current
 
-    return bfs(Node(0))
+    return dfs(Node(0))
