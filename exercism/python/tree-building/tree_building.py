@@ -11,40 +11,32 @@ class Node():
 
 
 def BuildTree(records):
-    root = None
-    records.sort(key=lambda x: x.record_id)
-    ordered_id = [i.record_id for i in records]
-    if records:
-        if ordered_id[-1] != len(ordered_id) - 1:
+    n = len(records)
+    if n == 0:
+        return None
+    children = [[] for _ in range(n)]
+    parent = [None for _ in range(n)]
+    for r in records:
+        if r.parent_id not in range(n) or r.record_id not in range(n):
             raise ValueError('Tree must be continuous')
-        if ordered_id[0] != 0:
-            raise ValueError('Tree must start with id 0')
-    trees = []
-    parent = {}
-    for i in range(len(ordered_id)):
-        for j in records:
-            if ordered_id[i] == j.record_id:
-                if j.record_id == 0:
-                    if j.parent_id != 0:
-                        raise ValueError('Root node cannot have a parent')
-                if j.record_id < j.parent_id:
-                    raise ValueError('Parent id must be lower than child id')
-                if j.record_id == j.parent_id:
-                    if j.record_id != 0:
-                        raise ValueError('Tree is a cycle')
-                trees.append(Node(ordered_id[i]))
-    for i in range(len(ordered_id)):
-        for j in trees:
-            if i == j.node_id:
-                parent = j
-        for j in records:
-            if j.parent_id == i:
-                for k in trees:
-                    if k.node_id == 0:
-                        continue
-                    if j.record_id == k.node_id:
-                        child = k
-                        parent.children.append(child)
-    if len(trees) > 0:
-        root = trees[0]
-    return root
+        if r.record_id < r.parent_id:
+            raise ValueError('Parent id must be lower than child id')
+        if r.record_id == r.parent_id and r.record_id != 0:
+            raise ValueError('Tree is a cycle')
+        if r.record_id == 0 and r.parent_id != 0:
+            raise ValueError('Root node cannot have a parent')
+        parent[r.record_id] = r.parent_id
+        if r.record_id != 0:
+            children[r.parent_id].append(r.record_id)
+    if parent[0] is None:
+        raise ValueError('Tree must start with id 0')
+
+    def bfs():
+        def rec(current):
+            for child in sorted(children[current.node_id]):
+                node = rec(Node(child))
+                current.children.append(node)
+            return current
+        return rec(Node(0))
+
+    return bfs()
