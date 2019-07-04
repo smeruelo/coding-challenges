@@ -11,32 +11,29 @@ class Node():
 
 
 def BuildTree(records):
+    records.sort(key=lambda x: x.record_id)
     n = len(records)
     if n == 0:
         return None
+    if records[0].record_id != 0:
+        raise ValueError('Tree must start with id 0')
+    if records[0].parent_id != 0:
+        raise ValueError('Root node cannot have a parent')
+
     children = [[] for _ in range(n)]
-    parent = [None for _ in range(n)]
-    for r in records:
+    for r in records[1:]:
         if r.parent_id not in range(n) or r.record_id not in range(n):
             raise ValueError('Tree must be continuous')
         if r.record_id < r.parent_id:
             raise ValueError('Parent id must be lower than child id')
-        if r.record_id == r.parent_id and r.record_id != 0:
+        if r.record_id == r.parent_id:
             raise ValueError('Tree is a cycle')
-        if r.record_id == 0 and r.parent_id != 0:
-            raise ValueError('Root node cannot have a parent')
-        parent[r.record_id] = r.parent_id
-        if r.record_id != 0:
-            children[r.parent_id].append(r.record_id)
-    if parent[0] is None:
-        raise ValueError('Tree must start with id 0')
+        children[r.parent_id].append(r.record_id)
 
-    def bfs():
-        def rec(current):
-            for child in sorted(children[current.node_id]):
-                node = rec(Node(child))
-                current.children.append(node)
-            return current
-        return rec(Node(0))
+    def bfs(current):
+        for child in children[current.node_id]:
+            node = bfs(Node(child))
+            current.children.append(node)
+        return current
 
-    return bfs()
+    return bfs(Node(0))
