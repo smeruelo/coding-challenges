@@ -11,29 +11,21 @@ class Node():
 
 
 def BuildTree(records):
-    records.sort(key=lambda x: x.record_id)
     n = len(records)
-    if n == 0:
-        return None
-    if records[0].record_id != 0:
-        raise ValueError('Tree must start with id 0')
-    if records[0].parent_id != 0:
-        raise ValueError('Root node cannot have a parent')
-
     children = [[] for _ in range(n)]
-    for r in records[1:]:
-        if r.parent_id not in range(n) or r.record_id not in range(n):
-            raise ValueError('Tree must be continuous')
-        if r.record_id < r.parent_id:
-            raise ValueError('Parent id must be lower than child id')
-        if r.record_id == r.parent_id:
-            raise ValueError('Tree is a cycle')
-        children[r.parent_id].append(r.record_id)
+    tree = [None] * n
 
-    def dfs(current):
-        for child in children[current.node_id]:
-            node = dfs(Node(child))
-            current.children.append(node)
-        return current
+    try:
+        for r in records:
+            children[r.parent_id].append(r.record_id)
+        for i in range(n - 1, -1, -1):
+            tree[i] = Node(i)
+            for c in sorted(children[i]):
+                if c <= i and i != 0:
+                    raise ValueError("Tree is a cycle, or parent id is higher than child's.")
+                if c != 0:
+                    tree[i].children.append(tree[c])
+    except IndexError:
+        raise ValueError('Tree must be continuous and start with id 0')
 
-    return dfs(Node(0))
+    return tree[0] if tree else None
