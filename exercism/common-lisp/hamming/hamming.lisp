@@ -9,6 +9,6 @@
 (defun distance (dna1 dna2)
   "Number of positional differences in two equal length dna strands."
   (when (= (length dna1) (length dna2))
-    (loop for c1 in dna1
-       for c2 in dna2
-       collect (if (char= c1 c2) 0 1))))
+    (let ((c 0))
+      (map nil (lambda (c1 c2) (incf c (if (char= c1 c2) 0 1))) dna1 dna2)
+      c)))
