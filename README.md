@@ -4,5 +4,6 @@
 * [exercism](https://exercism.io)
 * [HackerRank](https://www.hackerrank.com)
 * [Project Euler](https://projecteuler.net)
+* [Root-Me](https://www.root-me.org/en/Challenges/)
 * [T3chFest](https://t3chfest.uc3m.es)
 * [Tuenti Challenge](https://contest.tuenti.net/)
