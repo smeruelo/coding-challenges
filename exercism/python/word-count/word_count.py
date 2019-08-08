@@ -6,5 +6,5 @@ from re import sub
 
 def count_words(sentence):
     words = sub('[^0-9a-z\']+', ' ', sentence.lower()).split()
-    no_quotes = map(lambda w: sub(r"^'(.*)'$", r'\1', w), words)
+    no_quotes = map(lambda w: w.strip("'"), words)
     return Counter(no_quotes)
