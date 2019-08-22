@@ -25,23 +25,24 @@ class Board:
 
     def explore(self, cell):
         encircled = set()
+        owner_so_far = None
 
-        def aux(cell):
-            x, y = cell
+        to_visit = [cell]
+        while to_visit:
+            c = to_visit.pop()
+            x, y = c
             if self._board[y][x] == NONE:
-                encircled.add((x, y))
-                nexts_to_explore = filter(lambda c: not (c in encircled), self.neighbours(cell))
-                owners = [aux(c) for c in nexts_to_explore]
-                if owners and all(map(lambda o: o == BLACK, owners)):
-                    return BLACK
-                if owners and all(map(lambda o: o == WHITE, owners)):
-                    return WHITE
-                return NONE
-            return self._board[y][x]
+                encircled.add(c)
+                to_visit.extend(filter(lambda c: c not in encircled, self.neighbours(c)))
+            elif not owner_so_far:
+                owner_so_far = self._board[y][x]
+            elif owner_so_far != self._board[y][x]:
+                owner_so_far = NONE
 
-        owner = aux(cell)
+        if not owner_so_far:
+            owner_so_far = NONE
         if encircled:
-            return (owner, encircled)
+            return (owner_so_far, encircled)
         return (NONE, set())
 
     def territory(self, x, y):
@@ -83,7 +84,7 @@ class Board:
 
         for y in range(self._height):
             for x in range(self._width):
-                if not (x, y) in visited and self._board[y][x] == NONE:
+                if self._board[y][x] == NONE and (x, y) not in visited:
                     owner, encircled = self.territory(x, y)
                     d[owner].update(encircled)
                     visited.update(encircled)
