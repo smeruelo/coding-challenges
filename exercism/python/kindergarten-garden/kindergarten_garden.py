@@ -8,15 +8,15 @@ class Garden(object):
     PLANTS = {'G': 'Grass', 'C': 'Clover', 'R': 'Radishes', 'V': 'Violets'}
 
     def __init__(self, diagram, students=None):
-        self._diagram = diagram
-        self._students = sorted(students) if students else self.STUDENTS
-        self._column = {k: v * 2 for v, k in enumerate(self._students)}
+        self.diagram = diagram
+        self.students = sorted(students) if students else self.STUDENTS
+        self.column = {key: value * 2 for value, key in enumerate(self.students)}
 
     def plants(self, student):
         """Returns the 4 plants that belong to the given student."""
 
-        # i1 (i2) is the index in diagram for the first child's plant in the first (second) row.
-        i1 = self._column[student]
-        i2 = i1 + len(self._diagram) // 2 + 1
-        plants = [self._diagram[i1], self._diagram[i1+1], self._diagram[i2], self._diagram[i2+1]]
+        i_row1 = self.column[student]
+        i_row2 = i_row1 + len(self.diagram) // 2 + 1
+        plants = [self.diagram[i_row1], self.diagram[i_row1 + 1],
+                  self.diagram[i_row2], self.diagram[i_row2 + 1]]
         return [self.PLANTS[p] for p in plants]
