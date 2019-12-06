@@ -59,17 +59,16 @@ class MSinglyLinkedList():
         aux(self.head)
         return self
 
-    def concat(self, lst):
-        p1 = self.head
-        p2 = None
-        while not p1.is_last():
-            p2 = p1
-            p1 = p1.nxt
 
-        if p2:
-            p2.nxt = lst.head
-        else:
+    # O(n1)
+    def concat(self, lst):
+        if self.head.is_last():
             self.head = lst.head
+        else:
+            current_node = self.head
+            while not current_node.nxt.is_last():
+                current_node = current_node.nxt
+            current_node.nxt = lst.head
 
         # Careful! Now lst points somewhere in the middle of our list.
         # Maybe do lst.head = Node() so it stops doing that?
