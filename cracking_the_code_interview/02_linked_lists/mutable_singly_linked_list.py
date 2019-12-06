@@ -11,6 +11,7 @@ class MSinglyLinkedList():
     def __init__(self):
         self.head = Node()
 
+    # O(n)
     def length(self):
         count = 0
         current_node = self.head
@@ -19,11 +20,13 @@ class MSinglyLinkedList():
             current_node = current_node.nxt
         return count
 
+    # O(1)
     def push(self, data):
         new_node = Node(data, self.head)
         self.head = new_node
         return self
 
+    # O(1)
     def pop(self):
         if self.head.is_last():
             raise Exception('List is empty')
@@ -31,6 +34,7 @@ class MSinglyLinkedList():
         self.head = self.head.nxt
         return (popped, self)
 
+    # O(n)
     def remove(self, value):
         p1 = self.head
         p2 = None
@@ -46,6 +50,7 @@ class MSinglyLinkedList():
 
         return self
 
+    # O(n)
     def reverse(self):
         rev = MSinglyLinkedList()
         def aux(current_node):
@@ -75,6 +80,7 @@ class MSinglyLinkedList():
 
         return self
 
+    # O(n)
     def __repr__(self):
         s = ''
         current_node = self.head
