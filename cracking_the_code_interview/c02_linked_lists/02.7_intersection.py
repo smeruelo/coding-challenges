@@ -1,4 +1,3 @@
-#! /usr/bin/python3
 from mutable_singly_linked_list import MSinglyLinkedList
 
 
@@ -6,11 +5,11 @@ from mutable_singly_linked_list import MSinglyLinkedList
 def len_and_last(lst):
     """Returns (n, node), where n = length of the list, and node = its last node"""
     def aux(i, current):
-        if current.nxt.is_last():
+        if not current.nxt:
             return (i, current)
         return aux(i + 1, current.nxt)
 
-    if lst.head.is_last():
+    if lst.is_empty():
         return (0, lst)
     return aux(1, lst.head)
 
