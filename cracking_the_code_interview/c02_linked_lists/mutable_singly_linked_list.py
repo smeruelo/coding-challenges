@@ -38,6 +38,12 @@ class MSinglyLinkedList():
         self.head = self.head.nxt
         return popped
 
+    # O(1)
+    def peek(self):
+        if self.is_empty():
+            raise Exception('List is empty')
+        return self.head.data
+
     # O(n)
     def remove(self, item):
         p1 = self.head
