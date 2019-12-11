@@ -29,18 +29,17 @@ def partition_im(lst, k):
 
 # O(n)
 def partition_m(lst, k):
+    smaller = MSinglyLinkedList()
+    bigger = MSinglyLinkedList()
 
-    # O(n)
-    def classify(smaller, bigger, current_node):
-        if not current_node:
-            return (smaller, bigger)
+    current_node = lst.head
+    while not current_node is None:
         if current_node.data < k:
-            return classify(smaller.push(current_node.data), bigger, current_node.nxt)
+            smaller.push(current_node.data)
         else:
-            return classify(smaller, bigger.push(current_node.data), current_node.nxt)
+            bigger.push(current_node.data)
+        current_node = current_node.nxt
 
-    # O(n)
-    smaller, bigger = classify(MSinglyLinkedList(), MSinglyLinkedList(), lst.head)
     lst.head = smaller.concat(bigger).head
     return lst
 
