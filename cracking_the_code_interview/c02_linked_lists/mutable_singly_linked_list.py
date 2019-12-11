@@ -1,4 +1,4 @@
-class Node():
+class SNode():
     def __init__(self, data=None, nxt=None):
         self.data = data
         self.nxt = nxt
@@ -26,7 +26,7 @@ class MSinglyLinkedList():
 
     # O(1)
     def push(self, item):
-        new_node = Node(item, self.head)
+        new_node = SNode(item, self.head)
         self.head = new_node
         return self
 
@@ -79,7 +79,7 @@ class MSinglyLinkedList():
             current_node.nxt = lst.head
 
         # Careful! Now lst points somewhere in the middle of our list.
-        # Maybe do lst.head = Node() so it stops doing that?
+        # Maybe do lst.head = SNode() so it stops doing that?
 
         return self
 

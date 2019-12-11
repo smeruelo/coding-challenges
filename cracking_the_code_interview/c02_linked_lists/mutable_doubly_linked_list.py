@@ -1,4 +1,4 @@
-class Node():
+class DNode():
     def __init__(self, prv=None, data=None, nxt=None):
         self.prv = prv
         self.data = data
@@ -28,7 +28,7 @@ class MDoublyLinkedList():
 
     # O(1)
     def push_hd(self, item):
-        new_node = Node(None, item, self.head)
+        new_node = DNode(None, item, self.head)
         if self.is_empty():
             self.tail = new_node
         else:
@@ -38,7 +38,7 @@ class MDoublyLinkedList():
 
     # O(1)
     def push_tl(self, item):
-        new_node = Node(self.tail, item, None)
+        new_node = DNode(self.tail, item, None)
         if self.is_empty():
             self.head = new_node
         else:
@@ -97,7 +97,7 @@ class MDoublyLinkedList():
         self.tail = lst.tail
 
         # Careful! Now lst points somewhere in the middle of our list.
-        # Maybe do lst.head = Node() so it stops doing that?
+        # Maybe do lst.head = DNode() so it stops doing that?
 
         return self
 
