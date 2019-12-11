@@ -1,4 +1,3 @@
-#! /usr/bin/python3
 from immutable_singly_linked_list import ISinglyLinkedList
 from mutable_singly_linked_list import MSinglyLinkedList
 
@@ -33,7 +32,7 @@ def partition_m(lst, k):
 
     # O(n)
     def classify(smaller, bigger, current_node):
-        if current_node.is_last():
+        if not current_node:
             return (smaller, bigger)
         if current_node.data < k:
             return classify(smaller.push(current_node.data), bigger, current_node.nxt)
