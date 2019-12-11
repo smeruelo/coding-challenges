@@ -1,4 +1,3 @@
-#! /usr/bin/python3
 from mutable_singly_linked_list import MSinglyLinkedList
 
 
@@ -7,7 +6,7 @@ from mutable_singly_linked_list import MSinglyLinkedList
 def first_node_in_loop_1(lst):
     nodes = dict()
     current = lst.head
-    while not current.is_last():
+    while current:
         if current in nodes:
             return current
         nodes[current] = True
@@ -36,7 +35,7 @@ def first_node_in_loop_2(lst):
     def aux_1st_encounter():
         p1 = lst.head
         p2 = lst.head.nxt
-        while not p2.is_last() and not p2.nxt.is_last():
+        while p2 and p2.nxt:
             if p1 is p2:
                 return aux_2nd_encounter(p1.nxt)
             p1 = p1.nxt
@@ -51,7 +50,7 @@ def first_node_in_loop_2(lst):
             p2 = p2.nxt
         return p1
 
-    if lst.head.is_last():
+    if lst.is_empty():
         return None
     return aux_1st_encounter()
 
