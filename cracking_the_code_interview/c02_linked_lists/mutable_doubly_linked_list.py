@@ -70,6 +70,18 @@ class MDoublyLinkedList():
             self.head = None
         return popped
 
+    # O(1)
+    def peek_hd(self):
+        if self.is_empty():
+            raise Exception('List is empty')
+        return self.head.data
+
+    # O(1)
+    def peek_tl(self):
+        if self.is_empty():
+            raise Exception('List is empty')
+        return self.tail.data
+
     # O(n)
     def remove(self, item):
         p = self.head
