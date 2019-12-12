@@ -22,7 +22,7 @@ class ISinglyLinkedList():
     # O(1)
     def pop(self):
         if self.is_nil():
-            raise Exception('List is empty')
+            raise EmptyListError
         return (self.car, self.cdr)
 
     # O(n)
@@ -56,3 +56,24 @@ class ISinglyLinkedList():
         if self.is_nil():
             return '.'
         return f'-> {self.car}{self.cdr}'
+
+    # O(n), where n is the length of the shortest list
+    def __eq__(self, other):
+        def eq_contents(lst_1, lst_2):
+            if lst_1.is_nil() and lst_2.is_nil():
+                return True
+            if lst_1.is_nil() or lst_2.is_nil():
+                return False
+            if lst_1.car != lst_2.car:
+                return False
+            return eq_contents(lst_1.cdr, lst_2.cdr)
+
+        return isinstance(other, self.__class__) and eq_contents(self, other)
+
+    # O(n), where n is the length of the shortest list
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+
+class EmptyListError(Exception):
+    pass
