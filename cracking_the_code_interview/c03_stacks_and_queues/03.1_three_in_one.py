@@ -1,12 +1,9 @@
-# Very bad solution
-# We occupy the cells secuencially. In each cell we store the item and the index of the next one.
-# The first 3 cells store the heads of the 3 stacks.
-# pop() leaves empty cells that are never reused.
-
 class ThreeStacks():
+    SIZE = 3
+
     def __init__(self):
-        self._array = [None, None, None]
-        self._first_free_cell = 3
+        self._array = [None] * 3 * self.SIZE
+        self._size = [0, 0, 0]
 
     def validated_stack_number(f):
         def f_wrapper(*args, **kwargs):
@@ -17,41 +14,46 @@ class ThreeStacks():
         return f_wrapper
 
     @validated_stack_number
+    def size(self, stack):
+        return self._size[stack]
+
+    def _index(self, stack, i):
+        return (stack * self.SIZE) + i
+
+    @validated_stack_number
     def pop(self, stack):
-        if self._array[stack] is None:
+        if self.size(stack) == 0:
             raise EmptyStackError(f'Stack {stack}')
-        head = self._array[stack]
-        item, new_head = self._array[head]
-        self._array[head] = 'UNUSED'
-        self._array[stack] = new_head
-        return item
+        i = self._index(stack, self.size(stack) - 1)
+        self._size[stack] -= 1
+        return self._array[i]
 
     @validated_stack_number
     def push(self, stack, item):
-        head = self._array[stack]
-        self._array.append((item, head))
-        self._array[stack] = self._first_free_cell
-        self._first_free_cell += 1
+        if self.size(stack) == self.SIZE:
+            raise FullStackError(f'Stack {stack}')
+        i = self._index(stack, self.size(stack))
+        self._array[i] = item
+        self._size[stack] += 1
         return self
 
     @validated_stack_number
     def peek(self, stack):
-        if self._array[stack] is None:
+        if self.size(stack) == 0:
             raise EmptyStackError(f'Stack {stack}')
-        head = self._array[stack]
-        item, _ = self._array[head]
-        return item
+        i = self._index(stack, self.size(stack) - 1)
+        return self._array[i]
 
     @validated_stack_number
     def is_empty(self, stack):
-        return self._array[stack] is None
+        return self.size(stack) == 0
 
     def __repr__(self):
         def traverse(stack):
-            current = self._array[stack]
-            while current is not None:
-                item, current = self._array[current]
-                yield item
+            current = self.size(stack) - 1
+            while current >= 0:
+                yield self._array[self._index(stack, current)]
+                current -= 1
 
         def repr(stack):
             gen = traverse(stack)
@@ -66,6 +68,10 @@ class ThreeStacks():
 
 
 class EmptyStackError(Exception):
+    pass
+
+
+class FullStackError(Exception):
     pass
 
 
