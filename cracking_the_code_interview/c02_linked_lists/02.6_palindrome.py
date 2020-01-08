@@ -1,4 +1,6 @@
-#! /usr/bin/python3
+# Problem: Palindrome
+# Implement a function to check if a linked list is a palindrome.
+
 from immutable_singly_linked_list import ISinglyLinkedList
 
 

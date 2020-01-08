@@ -1,4 +1,8 @@
-#! /usr/bin/python3
+# Problem: Remove Dups
+# Write code to remove duplicates from an unsorted linked list.
+# FOLLOW UP
+# How would you solve this problem if a temporary buffer is not allowed?
+
 from collections import defaultdict
 from immutable_singly_linked_list import ISinglyLinkedList
 

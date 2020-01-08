@@ -1,3 +1,8 @@
+# Problem: Zero Matrix
+# Write an algorithm such that if an element in an MxN matrix is 0,
+# its entire row and column are set to 0.
+
+
 # O(m * n * max{n, m}), extra space (sets, m + n)
 def zero_matrix_1(matrix):
     rows = set()
