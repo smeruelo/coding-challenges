@@ -7,8 +7,7 @@ class Stack():
 
     def pop(self):
         try:
-            item, _ = self._lst.pop()
-            return item
+            return self._lst.pop()
         except Exception:
             raise EmptyStackError
 
