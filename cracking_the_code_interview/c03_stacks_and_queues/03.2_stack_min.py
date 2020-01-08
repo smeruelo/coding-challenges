@@ -1,45 +1,37 @@
-# We store the current minimum.
-# When it is popped, we need to calculate the new current one --> O(n)
+# Problem: Stack Min
+# How would you design a stack which, in addition to push and pop, has a
+# function min which returns the minimum element? Push, pop and min should all
+# operate in 0(1) time.
+
+# Solution:
+# We store all the history of minimums.
+# We could store the minimum at the time of pushing an element for every
+# element --> too much space
+# Instead, we use a different stack and store the minimum only when it changes.
 
 from c03_stacks_and_queues.stack import Stack
 
 
 class StackMin(Stack):
     def __init__(self):
-        self._min = None
+        self._mins = Stack()
         Stack.__init__(self)
 
     # O(1)
     def min(self):
-        if self.is_empty():
+        if self._mins.is_empty():
             raise EmptyStackError
-        return self._min
+        return self._mins.peek()
 
-    # O(n)
-    def _search_min(self):
-        if self.is_empty():
-            raise EmptyStackError
-        current = self._lst.head
-        minimum = current.data
-        while current is not None:
-            minimum = min(minimum, current.data)
-            current = current.nxt
-        return minimum
-
-    # O(1) *amortized*
+    # O(1)
     def pop(self):
         popped = Stack.pop(self)
-        if popped == self._min:
-            if self.is_empty():
-                self._min = None
-            else:
-                self._min = self._search_min()
+        if popped == self.min():
+            self._mins.pop()
         return popped
 
     # O(1)
     def push(self, item):
-        if self.is_empty():
-            self._min = item
-        else:
-            self._min = min(self._min, item)
+        if self.is_empty() or item <= self.min():
+            self._mins.push(item)
         Stack.push(self, item)
