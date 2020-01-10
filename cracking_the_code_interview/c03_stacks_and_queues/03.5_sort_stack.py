@@ -4,36 +4,24 @@
 # elements into any other data structure (such as an array).
 # The stack supports the following operations: push, pop, peek, and isEmpty.
 
-# Solution: Ugly, code is hard to understand.
-# We move elements from the stack to an aux one until we meet an element
-# that is out of order. Then we move back the elements inserting that one
-# in order. We start again until it's completely sorted.
+# Solution: We use an aux stack and keep that one sorted (but in reversed order)
+# We move elements from the stack to the aux one, inserting them in order.
+# When we're finished, we move them back to the original stack
+
 
 from c03_stacks_and_queues.stack import Stack
 
 
 # O(n * n)
 def sort_stack(s):
-    s_aux = Stack()
-    if s.is_empty():
-        return s
+    def insert_sorted(item):
+        while not s_aux.is_empty() and s_aux.peek() > item:
+            s.push(s_aux.pop())
+        s_aux.push(item)
 
-    end = False
-    while not end and not s.is_empty():
-        if s_aux.is_empty() or s.peek() >= s_aux.peek():
-            s_aux.push(s.pop())
-        else:
-            tmp = s.pop()
-            if s.is_empty():
-                end = True
-            while not s_aux.is_empty():
-                if not tmp or s_aux.peek() > tmp:
-                    s.push(s_aux.pop())
-                else:
-                    s.push(tmp)
-                    tmp = None
-            if tmp:
-                s.push(tmp)
+    s_aux = Stack()
+    while not s.is_empty():
+        insert_sorted(s.pop())
     while not s_aux.is_empty():
         s.push(s_aux.pop())
 
