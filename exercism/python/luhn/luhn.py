@@ -11,7 +11,7 @@ class Luhn:
             return False
         else:
             total = 0
-            for index, char in enumerate(trimmed[::-1]):
+            for index, char in enumerate(reversed(trimmed)):
                 try:
                     digit = int(char)
                 except ValueError:
