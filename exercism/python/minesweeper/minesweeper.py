@@ -1,3 +1,5 @@
+# https://exercism.io/my/solutions/541ee95c33d64217b699fd3e428751a8
+
 
 def annotate(minefield):
 
@@ -16,29 +18,24 @@ def annotate(minefield):
     if cols == 0:
         return minefield
     
-    aux_field = [[0] * cols for _ in range(rows)]
+    def adjacent_cells(i, j):
+        def in_bounds(i, j):
+            return i >= 0 and i < rows and j >= 0 and j < cols
 
-    def in_bounds(i, j):
-        return i >= 0 and i < rows and j >= 0 and j < cols
-
-    def add_count(i, j):
-        for r in range(i - 1, i + 2):
-            for c in range(j - 1, j + 2):
-                if in_bounds(r, c):
-                    aux_field[r][c] += 1
+        return filter(lambda cell: in_bounds(cell[0], cell[1]),
+                      [(i - 1, j - 1), (i - 1, j), (i - 1, j + 1),
+                       (i, j - 1), (i, j + 1),
+                       (i + 1, j - 1), (i + 1, j), (i + 1, j + 1)])
 
     for i in range(rows):
+        row = ''
         for j in range(cols):
-            if minefield[i][j] == '*':
-                add_count(i, j)
-
-    for i, row in enumerate(minefield):
-        aux_row = ''
-        for j, char in enumerate(row):
-            if char == '*' or aux_field[i][j] == 0:
-                aux_row += char
+            if minefield[i][j] == ' ':
+                mines = sum(map(lambda cell: 1 if minefield[cell[0]][cell[1]] == "*" else 0,
+                                adjacent_cells(i, j)))
+                row += str(mines) if mines > 0 else ' '
             else:
-                aux_row += str(aux_field[i][j])
-        minefield[i] = aux_row
+                row += '*'
+        minefield[i] = row
 
     return minefield
