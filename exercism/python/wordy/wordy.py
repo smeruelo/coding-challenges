@@ -1,7 +1,6 @@
-
-# Grammar:
+# https://exercism.io/my/solutions/ce4023b2ca6749b89c8d02cd428b6408
 #
-# WHATIS NUMBER (OPERATION NUMBER)* QUESTIONMARK
+# Grammar: WHATIS NUMBER (OPERATION NUMBER)* QUESTIONMARK
 
 def parse_whatis(tokens):
     if len(tokens) >= 2 and tokens[0] == 'What' and tokens[1] == 'is':
@@ -15,25 +14,32 @@ def parse_number(tokens):
     except Exception:
         raise ValueError('Invalid syntax.')
 
+def parse_power(token):
+    if (len(token) >= 3 and
+        (token[-2:] == 'st' or token[-2:] == 'nd' or token[-2:] == 'rd' or token[-2:] == 'th')):
+        return int(token[:-2])
+    else:
+        raise ValueError('Invalid syntax.')
+
 def parse_operation(tokens):
     try:
         if tokens[0] == 'plus':
             f = lambda x, y: x + y
-            next_token = 1
-        elif tokens[0] == 'minus':
+            return (f,) + parse_number(tokens[1:])
+        if tokens[0] == 'minus':
             f = lambda x, y: x - y
-            next_token = 1
-        elif tokens[0] == 'multiplied' and tokens[1] == 'by':
+            return (f,) + parse_number(tokens[1:])
+        if tokens[0] == 'multiplied' and tokens[1] == 'by':
             f = lambda x, y: x * y
-            next_token = 2
-        elif tokens[0] == 'divided' and tokens[1] == 'by':
+            return (f,) + parse_number(tokens[2:])
+        if tokens[0] == 'divided' and tokens[1] == 'by':
             f = lambda x, y: x // y
-            next_token = 2
-        else:
-            raise ValueError('Unsupported operation.')
-
-        op2, rest_tokens = parse_number(tokens[next_token:])
-        return (f, op2, rest_tokens)
+            return (f,) + parse_number(tokens[2:])
+        if (tokens[0] == 'raised' and tokens[1] == 'to' and
+              tokens[2] == 'the' and tokens[4] == 'power'):
+            f = lambda x, y: x ** y
+            return (f,) + (parse_power(tokens[3]), tokens[5:])
+        raise ValueError('Unsupported operation.')
     except Exception:
         raise ValueError('Invalid syntax.')
 
