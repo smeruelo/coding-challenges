@@ -2,6 +2,9 @@
 #
 # Grammar: WHATIS NUMBER (OPERATION NUMBER)* QUESTIONMARK
 
+from operator import add, mul, floordiv, sub
+
+
 def parse_whatis(tokens):
     if len(tokens) >= 2 and tokens[0] == 'What' and tokens[1] == 'is':
         return tokens[2:]
@@ -24,21 +27,16 @@ def parse_power(token):
 def parse_operation(tokens):
     try:
         if tokens[0] == 'plus':
-            f = lambda x, y: x + y
-            return (f,) + parse_number(tokens[1:])
+            return (add,) + parse_number(tokens[1:])
         if tokens[0] == 'minus':
-            f = lambda x, y: x - y
-            return (f,) + parse_number(tokens[1:])
+            return (sub,) + parse_number(tokens[1:])
         if tokens[0] == 'multiplied' and tokens[1] == 'by':
-            f = lambda x, y: x * y
-            return (f,) + parse_number(tokens[2:])
+            return (mul,) + parse_number(tokens[2:])
         if tokens[0] == 'divided' and tokens[1] == 'by':
-            f = lambda x, y: x // y
-            return (f,) + parse_number(tokens[2:])
+            return (floordiv,) + parse_number(tokens[2:])
         if (tokens[0] == 'raised' and tokens[1] == 'to' and
               tokens[2] == 'the' and tokens[4] == 'power'):
-            f = lambda x, y: x ** y
-            return (f,) + (parse_power(tokens[3]), tokens[5:])
+            return (pow,) + (parse_power(tokens[3]), tokens[5:])
         raise ValueError('Unsupported operation.')
     except Exception:
         raise ValueError('Invalid syntax.')
