@@ -5,21 +5,16 @@ class Clock:
     def __init__(self, hour, minute):
         self._min = minute % 60
         self._hour = (hour + (minute // 60)) % 24
+        # self._hour, self._min = divmod((hour * 60 + minute) % (24 * 60), 60)
 
     def __repr__(self):
-        mm = str(self._min).zfill(2)
-        hh = str(self._hour).zfill(2)
-        return f'{hh}:{mm}'
+        return f'{self._hour:02d}:{self._min:02d}'
 
     def __eq__(self, other):
         return self._hour == other._hour and self._min == other._min
 
     def __add__(self, minutes):
-        new_min = (self._min + minutes) % 60
-        new_hour = (self._hour + (self._min + minutes) // 60) % 24
-        return Clock(new_hour, new_min)
+        return Clock(self._hour, self._min + minutes)
 
     def __sub__(self, minutes):
-        new_min = (self._min - minutes) % 60
-        new_hour = (self._hour + (self._min - minutes) // 60) % 24
-        return Clock(new_hour, new_min)
+        return Clock(self._hour, self._min - minutes)
