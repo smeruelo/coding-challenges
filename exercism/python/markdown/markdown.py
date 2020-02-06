@@ -1,71 +1,40 @@
 import re
 
 
+def parse_chunck(chunck):
+    def parse_bold(s):
+        if m := re.match(r'(.*)__(.*)__(.*)', s):
+            return f'{m.group(1)}<strong>{m.group(2)}</strong>{m.group(3)}'
+        return s
+
+    def parse_italic(s):
+        if m := re.match(r'(.*)_(.*)_(.*)', s):
+            return f'{m.group(1)}<em>{m.group(2)}</em>{m.group(3)}'
+        return s
+
+    return parse_italic(parse_bold(chunck))
+
+
+def parse_line(line, in_list):
+    if m := re.match(r'(\*) (.*)', line):
+        if in_list:
+            return (f'<li>{parse_chunck(line[2:])}</li>'), True
+        return (f'<ul><li>{parse_chunck(line[2:])}</li>'), True
+
+    end_list = '</ul>' if in_list else ''
+    if m := re.match(r'(#{1,}) (.*)', line):
+        k = len(m.group(1))
+        return (f'{end_list}<h{str(k)}>{parse_chunck(line[k+1:])}</h{str(k)}>'), False
+    return (f'{end_list}<p>{parse_chunck(line)}</p>'), False
+
+
 def parse(markdown):
     lines = markdown.split('\n')
-    res = ''
+    html = []
     in_list = False
-    in_list_append = False
-    for i in lines:
-        if re.match('###### (.*)', i) is not None:
-            i = '<h6>' + i[7:] + '</h6>'
-        elif re.match('## (.*)', i) is not None:
-            i = '<h2>' + i[3:] + '</h2>'
-        elif re.match('# (.*)', i) is not None:
-            i = '<h1>' + i[2:] + '</h1>'
-        m = re.match(r'\* (.*)', i)
-        if m:
-            if not in_list:
-                in_list = True
-                is_bold = False
-                is_italic = False
-                curr = m.group(1)
-                m1 = re.match('(.*)__(.*)__(.*)', curr)
-                if m1:
-                    curr = m1.group(1) + '<strong>' + \
-                        m1.group(2) + '</strong>' + m1.group(3)
-                    is_bold = True
-                m1 = re.match('(.*)_(.*)_(.*)', curr)
-                if m1:
-                    curr = m1.group(1) + '<em>' + m1.group(2) + \
-                        '</em>' + m1.group(3)
-                    is_italic = True
-                i = '<ul><li>' + curr + '</li>'
-            else:
-                is_bold = False
-                is_italic = False
-                curr = m.group(1)
-                m1 = re.match('(.*)__(.*)__(.*)', curr)
-                if m1:
-                    is_bold = True
-                m1 = re.match('(.*)_(.*)_(.*)', curr)
-                if m1:
-                    is_italic = True
-                if is_bold:
-                    curr = m1.group(1) + '<strong>' + \
-                        m1.group(2) + '</strong>' + m1.group(3)
-                if is_italic:
-                    curr = m1.group(1) + '<em>' + m1.group(2) + \
-                        '</em>' + m1.group(3)
-                i = '<li>' + curr + '</li>'
-        else:
-            if in_list:
-                in_list_append = True
-                in_list = False
-
-        m = re.match('<h|<ul|<p|<li', i)
-        if not m:
-            i = '<p>' + i + '</p>'
-        m = re.match('(.*)__(.*)__(.*)', i)
-        if m:
-            i = m.group(1) + '<strong>' + m.group(2) + '</strong>' + m.group(3)
-        m = re.match('(.*)_(.*)_(.*)', i)
-        if m:
-            i = m.group(1) + '<em>' + m.group(2) + '</em>' + m.group(3)
-        if in_list_append:
-            i = '</ul>' + i
-            in_list_append = False
-        res += i
+    for line in lines:
+        parsed, in_list = parse_line(line, in_list)
+        html.append(parsed)
     if in_list:
-        res += '</ul>'
-    return res
+        html.append("</ul>")
+    return "".join(html)
