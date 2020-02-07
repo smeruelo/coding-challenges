@@ -1,31 +1,52 @@
+# https://exercism.io/my/solutions/b6a75144d4564342a627fabf078658c9
+
 import re
 
 
-def parse_chunck(chunck):
-    def parse_bold(s):
-        if m := re.match(r'(.*)__(.*)__(.*)', s):
-            return f'{m.group(1)}<strong>{m.group(2)}</strong>{m.group(3)}'
+BOLD_REGEX = r'(.*)__(.*)__(.*)'
+ITALIC_REGEX = r'(.*)_(.*)_(.*)'
+HEADER_REGEX = r'(#{1,}) (.*)'
+LIST_REGEX = r'(\*) (.*)'
+
+
+def parse_text(text):
+    """Process the actual content of lines, regarless its type."""
+
+    def replace(s, regex, tag):
+        if m := re.match(regex, s):
+            return f'{m.group(1)}<{tag}>{m.group(2)}</{tag}>{m.group(3)}'
         return s
+
+    def parse_bold(s):
+        return replace(s, BOLD_REGEX, 'strong')
 
     def parse_italic(s):
-        if m := re.match(r'(.*)_(.*)_(.*)', s):
-            return f'{m.group(1)}<em>{m.group(2)}</em>{m.group(3)}'
-        return s
+        return replace(s, ITALIC_REGEX, 'em')
 
-    return parse_italic(parse_bold(chunck))
+    return parse_italic(parse_bold(text))
 
 
 def parse_line(line, in_list):
-    if m := re.match(r'(\*) (.*)', line):
-        if in_list:
-            return (f'<li>{parse_chunck(line[2:])}</li>'), True
-        return (f'<ul><li>{parse_chunck(line[2:])}</li>'), True
+    """Process every line according its type: header / list item / paragraph."""
 
+    # List item
+    if m := re.match(LIST_REGEX, line):
+        begin_list = '' if in_list else '<ul>'
+        text = parse_text(line[2:])
+        return (f'{begin_list}<li>{text}</li>'), True
+
+    # If it's not a list item, it could be the end of one.
     end_list = '</ul>' if in_list else ''
-    if m := re.match(r'(#{1,}) (.*)', line):
+
+    # Header
+    if m := re.match(HEADER_REGEX, line):
         k = len(m.group(1))
-        return (f'{end_list}<h{str(k)}>{parse_chunck(line[k+1:])}</h{str(k)}>'), False
-    return (f'{end_list}<p>{parse_chunck(line)}</p>'), False
+        text = parse_text(line[k+1:])
+        return (f'{end_list}<h{str(k)}>{text}</h{str(k)}>'), False
+
+    # Paragraph
+    text = parse_text(line)
+    return (f'{end_list}<p>{text}</p>'), False
 
 
 def parse(markdown):
