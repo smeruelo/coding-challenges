@@ -3,8 +3,8 @@
 import re
 
 
-BOLD_REGEX = r'(.*)__(.*)__(.*)'
-ITALIC_REGEX = r'(.*)_(.*)_(.*)'
+BOLD_REGEX = r'__(.*?)__'
+ITALIC_REGEX = r'_(.*?)_'
 HEADER_REGEX = r'(#{1,}) (.*)'
 LIST_REGEX = r'(\*) (.*)'
 
@@ -13,9 +13,7 @@ def parse_text(text):
     """Process the actual content of lines, regarless its type."""
 
     def replace(s, regex, tag):
-        if m := re.match(regex, s):
-            return f'{m.group(1)}<{tag}>{m.group(2)}</{tag}>{m.group(3)}'
-        return s
+        return re.sub(regex, fr'<{tag}>\1</{tag}>', s)
 
     def parse_bold(s):
         return replace(s, BOLD_REGEX, 'strong')

@@ -79,6 +79,13 @@ class MarkdownTest(unittest.TestCase):
             "<h1>Start a list</h1><ul><li>Item 1</li><li>Item 2</li></ul><p>End a list</p>",
         )
 
+    def test_several_italics_and_bolds_in_the_same_line(self):
+        self.assertEqual(
+            parse("This _is_ __one__ _tricky_ __test__."),
+            "<p>This <em>is</em> <strong>one</strong> <em>tricky</em> <strong>test</strong>.</p>"
+        )
+
+
 
 if __name__ == "__main__":
     unittest.main()
