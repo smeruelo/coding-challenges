@@ -24,27 +24,23 @@ def parse_text(text):
     return parse_italic(parse_bold(text))
 
 
-def parse_line(line, in_list):
+def parse_line(line):
     """Process every line according its type: header / list item / paragraph."""
 
     # List item
     if m := re.match(LIST_REGEX, line):
-        begin_list = '' if in_list else '<ul>'
         text = parse_text(line[2:])
-        return (f'{begin_list}<li>{text}</li>'), True
-
-    # If it's not a list item, it could be the end of one.
-    end_list = '</ul>' if in_list else ''
+        return f'<li>{text}</li>'
 
     # Header
     if m := re.match(HEADER_REGEX, line):
         k = len(m.group(1))
         text = parse_text(line[k+1:])
-        return (f'{end_list}<h{str(k)}>{text}</h{str(k)}>'), False
+        return f'<h{str(k)}>{text}</h{str(k)}>'
 
     # Paragraph
     text = parse_text(line)
-    return (f'{end_list}<p>{text}</p>'), False
+    return f'<p>{text}</p>'
 
 
 def parse(markdown):
@@ -52,8 +48,15 @@ def parse(markdown):
     html = []
     in_list = False
     for line in lines:
-        parsed, in_list = parse_line(line, in_list)
-        html.append(parsed)
+        list_item = bool(re.match(LIST_REGEX, line))
+        list_tag = ''
+        if not in_list and list_item:
+            list_tag = '<ul>'
+        elif in_list and not list_item:
+            list_tag = '</ul>'
+        parsed = parse_line(line)
+        html.append(f'{list_tag}{parsed}')
+        in_list = list_item
     if in_list:
         html.append("</ul>")
     return "".join(html)
