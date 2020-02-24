@@ -22,32 +22,21 @@ UNEQUAL = 4
 
 def sublist(a, b):
 
-    def aux(a, b, ib_ini):
+    def sub(a, b):
         """Checks if a is a sublist of b."""
-        if a == []:
-            return True
-        if len(a) > len(b) - ib_ini:
-            return False
 
-        ia = 0
-        try:
-            ib = b.index(a[0], ib_ini)
-        except ValueError:
-            return False
+        for j in range(0, len(b)-len(a)+1):
+            i = 0
+            while i < len(a) and a[i] == b[j + i]:
+                i += 1
+            if i == len(a):
+                return True
+        return False
 
-        while ib < len(b) and ia < len(a) and a[ia] == b[ib]:
-            ia += 1
-            ib += 1
-        if ia == len(a):
-            return True
-        if ib == len(b):
-            return False
-        return aux(a, b, ib_ini + ia)
-
-    if len(a) < len(b) and aux(a, b, 0):
+    if len(a) < len(b) and sub(a, b):
         return SUBLIST
-    elif len(b) < len(a) and aux(b, a, 0):
+    if len(a) > len(b) and sub(b, a):
         return SUPERLIST
-    elif aux(a, b, 0):
+    if sub(a, b):
         return EQUAL
     return UNEQUAL
