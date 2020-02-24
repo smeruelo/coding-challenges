@@ -22,14 +22,11 @@ UNEQUAL = 4
 
 def sublist(a, b):
 
-    def sub(a, b):
-        """Checks if a is a sublist of b."""
+    def sub(l1, l2):
+        """Checks if l1 is a sublist of l2."""
 
-        for j in range(0, len(b)-len(a)+1):
-            i = 0
-            while i < len(a) and a[i] == b[j + i]:
-                i += 1
-            if i == len(a):
+        for i in range(0, len(l2)-len(l1)+1):
+            if l1 == l2[i:i+len(l1)]:
                 return True
         return False
 
