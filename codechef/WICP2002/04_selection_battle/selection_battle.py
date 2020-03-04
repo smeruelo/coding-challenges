@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# https://www.codechef.com/WICP2002/problems/WICP003
+
+
 from math import sqrt
 from sys import stdin
 
