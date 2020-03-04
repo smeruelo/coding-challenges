@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 # https://www.codechef.com/WICP2002/problems/CHJAIL
 
-import sys
-sys.setrecursionlimit(500000)
+from sys import stdin
+
+def read():
+    input_data = stdin.read().split()
+    for token in input_data:
+        yield token
+
+def tokens(g, n):
+    t = []
+    for _ in range(n):
+        t.append(next(g))
+    return t
 
 
 def escapable(jail, m, n, target):
@@ -23,11 +33,12 @@ def escapable(jail, m, n, target):
     return aux((0, 0), jail[0][0])
 
 
-for _ in range(int(input())):
-    m, n, x, y = map(int, input().split())
+reader = read()
+for _ in range(int(next(reader))):
+    m, n, x, y = map(int, tokens(reader, 4))
     jail = []
     for row in range(m):
-        jail.append(list(map(int, input().split())))
+        jail.append(list(map(int, tokens(reader, n))))
     if escapable(jail, m, n, (y-1, x-1)):
         print('Escape')
     else:
