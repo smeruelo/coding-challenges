@@ -4,35 +4,42 @@
 WIN = 'win'
 DRAW = 'draw'
 LOSS = 'loss'
+RESULTS = {WIN, DRAW, LOSS}
 POINTS = {WIN: 3, DRAW: 1, LOSS: 0}
 
 
 class Team():
     def __init__(self, name):
-        self.name = name
-        self.matches = {WIN: 0, DRAW: 0, LOSS: 0}
+        self._name = name
+        self._matches = {WIN: 0, DRAW: 0, LOSS: 0}
 
+    @property
+    def name(self):
+        return self._name
+
+    def matches(self, result):
+        if result not in RESULTS:
+            raise ValueError('Result must be "win", "draw", or "loss"')
+        return self._matches[result]
+
+    def add_result(self, result):
+        if result not in RESULTS:
+            raise ValueError('Result must be "win", "draw", or "loss"')
+        self._matches[result] += 1
+
+    @property
     def matches_played(self):
-        return sum(self.matches.values())
+        return sum(self._matches.values())
 
+    @property
     def points(self):
-        return sum([POINTS[result] * count for result, count in self.matches.items()])
+        return sum([POINTS[result] * count for result, count in self._matches.items()])
 
     def __lt__(self, other):
-        if self.points() == other.points():
+        if self.points == other.points:
             return self.name > other.name
         else:
-            return self.points() < other.points()
-
-    def __str__(self):
-        return (
-            f'{self.name:30} | '
-            f'{self.matches_played():2} | '
-            f'{self.matches[WIN]:2} | '
-            f'{self.matches[DRAW]:2} | '
-            f'{self.matches[LOSS]:2} | '
-            f'{self.points():2}'
-        )
+            return self.points < other.points
 
 
 def tally(rows):
@@ -40,7 +47,7 @@ def tally(rows):
     def update_teams(teams, name, result):
         if name not in teams:
             teams[name] = Team(name)
-        teams[name].matches[result] += 1
+        teams[name].add_result(result)
         return
 
     def read_results(rows):
@@ -55,7 +62,15 @@ def tally(rows):
     def table(teams):
         table = ['Team                           | MP |  W |  D |  L |  P']
         for team in sorted(teams.values(), reverse=True):
-            table.append(str(team))
+            row = (
+                f'{team.name:30} | '
+                f'{team.matches_played:2} | '
+                f'{team.matches(WIN):2} | '
+                f'{team.matches(DRAW):2} | '
+                f'{team.matches(LOSS):2} | '
+                f'{team.points:2}'
+            )
+            table.append(row)
         return table
 
     return table(read_results(rows))
