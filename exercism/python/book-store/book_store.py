@@ -1,24 +1,32 @@
+from functools import reduce
+
+
 DISCOUNTS = [0, 0, 5, 10, 20, 25]
 GROUP_PRICES = [8 * i * (100 - DISCOUNTS[i]) for i in range(len(DISCOUNTS))]
 
-def total(basket):
-    def price(groups):
-        return sum([GROUP_PRICES[len(g)] for g in groups])
 
-    def aux(j, groups):
-        if j == len(basket):
-            return price(groups)
-        for b in range(j, len(basket)):
-            book = basket[b]
-            posib = []
-            for i in range(len(groups)):
-                g = groups[i]
-                if book not in g:
-                    new_groups = groups[:i] + groups[i+1:] + [groups[i] | {book}]
-                    posib.append(new_groups)
-            if not posib:
-                posib = [groups + [{book}]]
-            return min([aux(b+1, p) for p in posib])
+def price(grouping):
+    return sum([GROUP_PRICES[len(g)] for g in grouping])
+
+
+def add_book(grouping, book):
+    new_groupings = [grouping + [{book}]]
+    for i, group in enumerate(grouping):
+        if book not in group:
+            new_groupings.append(grouping[:i] + [group | {book}] + grouping[i+1:])
+    return new_groupings
+
+
+def flatten(lst):
+    return reduce(lambda x, y: x + y, lst, [])
+
+
+def total(basket):
 
     basket.sort()
-    return aux(0, [])
+    groupings = [[]]
+    for i, book in enumerate(basket):
+        groupings = flatten(map(lambda x: add_book(x, book), groupings))
+
+    print(len(groupings))
+    return min(map(price, groupings))
