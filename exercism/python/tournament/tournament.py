@@ -10,30 +10,28 @@ POINTS = {WIN: 3, DRAW: 1, LOSS: 0}
 
 class Team():
     def __init__(self, name):
-        self._name = name
-        self._matches = {WIN: 0, DRAW: 0, LOSS: 0}
-
-    @property
-    def name(self):
-        return self._name
-
-    def matches(self, result):
-        if result not in RESULTS:
-            raise ValueError('Result must be "win", "draw", or "loss"')
-        return self._matches[result]
+        self.name = name
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
 
     def add_result(self, result):
         if result not in RESULTS:
-            raise ValueError('Result must be "win", "draw", or "loss"')
-        self._matches[result] += 1
+            raise ValueError(f'Result must be one of {RESULTS}')
+        if result == WIN:
+            self.wins += 1
+        elif result == LOSS:
+            self.losses += 1
+        else:
+            self.draws += 1
 
     @property
     def matches_played(self):
-        return sum(self._matches.values())
+        return self.wins + self.losses + self.draws
 
     @property
     def points(self):
-        return sum([POINTS[result] * count for result, count in self._matches.items()])
+        return self.wins * POINTS[WIN] + self.losses * POINTS[LOSS] + self.draws * POINTS[DRAW]
 
     def __lt__(self, other):
         if self.points == other.points:
@@ -44,19 +42,16 @@ class Team():
 
 def tally(rows):
 
-    def update_teams(teams, name, result):
-        if name not in teams:
-            teams[name] = Team(name)
-        teams[name].add_result(result)
-        return
-
     def read_results(rows):
-        other_team_result = {WIN:LOSS, DRAW:DRAW, LOSS:WIN}
+        other_team_result = {WIN: LOSS, DRAW: DRAW, LOSS: WIN}
         teams = dict()
         for row in rows:
-            team1, team2, result = row.split(';')
-            update_teams(teams, team1, result)
-            update_teams(teams, team2, other_team_result[result])
+            name1, name2, result1 = row.split(';')
+            result2 = other_team_result[result1]
+            team1 = teams.setdefault(name1, Team(name1))
+            team2 = teams.setdefault(name2, Team(name2))
+            team1.add_result(result1)
+            team2.add_result(result2)
         return teams
 
     def table(teams):
@@ -65,9 +60,9 @@ def tally(rows):
             row = (
                 f'{team.name:30} | '
                 f'{team.matches_played:2} | '
-                f'{team.matches(WIN):2} | '
-                f'{team.matches(DRAW):2} | '
-                f'{team.matches(LOSS):2} | '
+                f'{team.wins:2} | '
+                f'{team.draws:2} | '
+                f'{team.losses:2} | '
                 f'{team.points:2}'
             )
             table.append(row)
