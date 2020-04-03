@@ -1,56 +1,104 @@
-from functools import reduce
-
+from itertools import chain
 
 DISCOUNTS = [0, 0, 5, 10, 20, 25]
 GROUP_PRICES = [8 * i * (100 - DISCOUNTS[i]) for i in range(len(DISCOUNTS))]
 
 
-def price(grouping):
-    return sum([GROUP_PRICES[len(g)] for g in grouping])
+class Group():
+    def __init__(self, book=None):
+        self.books = [0, 0, 0, 0, 0]
+        if book:
+            self.add(book)
+
+    @property
+    def size(self):
+        return self.books.count(1)
+
+    @property
+    def price(self):
+        return GROUP_PRICES[self.size]
+
+    def add(self, book):
+        if self.books[book-1] == 1:
+            raise Exception(f'Group already contains book {book}.')
+        self.books[book-1] = 1
+
+    def contains(self, book):
+        return self.books[book-1] == 1
+
+    def copy(self):
+        new = Group()
+        for i, b in enumerate(self.books):
+            if b:
+                new.add(i+1)
+        return new
+
+    def __lt__(self, other):
+        return str(self) < str(other)
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __repr__(self):
+        return ''.join(map(str, self.books))
 
 
-def group_hash(group):
-    size = len(group)
-    value = sum(group)
-    return 100 * size + value
+class Grouping():
+    def __init__(self):
+        self.groups = []
 
-def grouping_hash(grouping):
-    return sorted(map(group_hash, grouping))
+    @property
+    def price(self):
+        return sum(map(lambda g: g.price, self.groups))
 
-def not_in(hashed_grouping, hashed_groupings):
-    for g in hashed_groupings:
-        if hashed_grouping == :
-            return False
-    return True
+    def add(self, group):
+        self.groups.append(group)
 
-def uniques(groupings):
-    """Given a list of groupings, it returns a list of those groupings that are not duplicated.
-    It uses a hash function to represent groupings, so they can easily be ordered and compared."""
-    nd = []
-    hnd = []
-    for g in groupings:
-        hg = grouping_hash(g)
-        if not_in(hg, hnd):
-            hnd.append(hg)
-            nd.append(g)
-    return nd
+    def contains(self, group):
+        for g in self.groups:
+            if g == group:
+                return True
+        return False
 
-def add_book(grouping, book):
-    new_groupings = [grouping + [{book}]]
-    for i, group in enumerate(grouping):
-        if book not in group:
-            new_groupings.append(grouping[:i] + [group | {book}] + grouping[i+1:])
-    return new_groupings
+    def sort(self):
+        self.groups.sort()
 
-def flatten(lst):
-    return reduce(lambda x, y: x + y, lst, [])
+    def copy(self):
+        new = Grouping()
+        for g in self.groups:
+            new.add(g.copy())
+        return new
+
+    def possibilities(self, book):
+        grouping = self.copy()
+        grouping.add(Group(book))
+        pos = [grouping]
+        for i, g in enumerate(self.groups):
+            if not g.contains(book):
+                grouping = self.copy()
+                grouping.groups[i].add(book)
+                grouping.sort()
+                pos.append(grouping)
+        return pos
+        
+    def __eq__(self, other):
+        return self.groups == other.groups
+
+    def __repr__(self):
+        return '(' + ' '.join([str(g) for g in self.groups]) + ')'
+
+
 
 def total(basket):
-    basket.sort()
-    groupings = [[]]
-    for book in basket:
-        new_groupings = flatten(map(lambda g: add_book(g, book), groupings))
-        groupings = uniques(new_groupings)
+    def uniques(possible_groupings):
+        groupings = []
+        for g in possible_groupings:
+            if not g in groupings:
+                groupings.append(g)
+        return groupings
 
-    # print(len(groupings))
-    return min(map(price, groupings))
+    groupings = [Grouping()]
+    for book in basket:
+        possible_groupings = list(chain.from_iterable([g.possibilities(book) for g in groupings]))
+        groupings = uniques(possible_groupings)
+    return min(map(lambda g: g.price, groupings))
