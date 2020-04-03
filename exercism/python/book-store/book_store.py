@@ -77,7 +77,6 @@ class Grouping():
             if not g.contains(book):
                 grouping = self.copy()
                 grouping.groups[i].add(book)
-                grouping.sort()
                 pos.append(grouping)
         return pos
         
@@ -93,12 +92,13 @@ def total(basket):
     def uniques(possible_groupings):
         groupings = []
         for g in possible_groupings:
+            g.sort()
             if not g in groupings:
                 groupings.append(g)
         return groupings
 
     groupings = [Grouping()]
-    for book in basket:
+    for book in sorted(basket):
         possible_groupings = list(chain.from_iterable([g.possibilities(book) for g in groupings]))
         groupings = uniques(possible_groupings)
     return min(map(lambda g: g.price, groupings))
