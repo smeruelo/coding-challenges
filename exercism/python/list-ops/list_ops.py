@@ -1,67 +1,43 @@
 # https://exercism.io/my/solutions/6b7e0de8f73a4aba88d7387866d37d5b
 
 
-def append(lst1, lst2):
-    len1, len2 = length(lst1), length(lst2)
-    l = [None] * (len1 + len2)
-    for i in range(len1):
-        l[i] = lst1[i]
-    for i in range(len2):
-        l[len1 + i] = lst2[i]
-    return l
+def cons(item, lst):
+    return [item, *lst]
 
 
-def concat(lsts):
-    if length(lsts) == 0:
-        return []
-    l = lsts[0]
-    for i in range(1, len(lsts)):
-        l = append(l, lsts[i])
-    return l
-
-
-def filter(function, lst):
-    l = []
-    for item in lst:
-        if function(item):
-            l = append(l, [item])
-    return l
-
-
-def length(lst):
-    i = 0
-    while True:
-        try:
-            lst[i]
-            i += 1
-        except IndexError:
-            return i
-
-
-def map(function, lst):
-    l = [None] * length(lst)
-    for i in range(length(l)):
-        l[i] = function(lst[i])
-    return l
-
-
-def foldl(function, lst, initial):
-    accum = initial
-    for item in lst:
-        accum = function(accum, item)
-    return accum
+def foldl(function, lst, accum):
+    if not lst:
+        return accum
+    car, *cdr = lst
+    return foldl(function, cdr, function(accum, car))
 
 
 def foldr(function, lst, initial):
-    accum = initial
-    for i in range(length(lst)-1, -1, -1):
-        accum = function(lst[i], accum)
-    return accum
+    if not lst:
+        return initial
+    car, *cdr = lst
+    return function(car, foldr(function, cdr, initial))
+
+
+def append(lst1, lst2):
+    return foldr(cons, lst1, lst2)
+
+
+def concat(lsts):
+    return foldl(append, lsts, [])
+
+
+def filter(function, lst):
+    return foldr(lambda car, accum: cons(car, accum) if function(car) else accum, lst, [])
+
+
+def length(lst):
+    return foldl(lambda car, _: car + 1, lst, 0)
+
+
+def map(function, lst):
+    return foldr(lambda car, accum: cons(function(car), accum), lst, [])
 
 
 def reverse(lst):
-    l = []
-    for i in range(length(lst)-1, -1, -1):
-        l = append(l, [lst[i]])
-    return l
-        
+    return foldl(lambda accum, car: cons(car, accum), lst, [])
