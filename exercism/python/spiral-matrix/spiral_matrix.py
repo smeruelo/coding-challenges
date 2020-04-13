@@ -7,21 +7,17 @@ def spiral_matrix(size):
     m = [[None] * size for _ in range(size)]
     i = count(1)
 
-    def perimeter(length):
-        row = col = (size - length) // 2
-        r = row
+    def perimeter(row, col, length):
         for c in range(col, col+length):
-            m[r][c] = next(i)
-        c = col + length - 1
+            m[row][c] = next(i)
         for r in range(row+1, row+length):
-            m[r][c] = next(i)
-        r = row + length - 1
+            m[r][col+length-1] = next(i)
         for c in range(col+length-2, col-1, -1):
-            m[r][c] = next(i)
-        c = col
+            m[row+length-1][c] = next(i)
         for r in range(row+length-2, row, -1):
-            m[r][c] = next(i)
+            m[r][col] = next(i)
 
     for length in range(size, 0, -2):
-        perimeter(length)
+        start = (size - length) // 2
+        perimeter(start, start, length)
     return m
