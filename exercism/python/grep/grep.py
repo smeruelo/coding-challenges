@@ -1,34 +1,28 @@
+# https://exercism.io/my/solutions/54ca434a98e443afa2d945741195bb91
+
 import operator
 
 
-def grep_n(pattern, lines, flags):
-    op = operator.eq if '-x' in flags else operator.contains
+def matches(pattern, line, flags):
     if '-i' in flags:
-        aux = lambda pattern, line: op(line.lower(), pattern.lower())
-    else:
-        aux = lambda pattern, line: op(pattern, line)
-    if '-v' in flags:
-        f = lambda pattern, line: not aux(pattern, line)
-    else:
-        f = aux
-
-    numbered_lines = map(lambda x: (x[0]+1, x[1]), enumerate(lines))
-    return list(filter(lambda x: f(pattern, x[1]), numbered_lines))
+        line = line.lower()
+        pattern = pattern.lower()
+    op = operator.eq if '-x' in flags else operator.contains
+    result = op(line, pattern)
+    return not result if '-v' in flags else result
 
 
 def grep(pattern, flags, files):
     output = []
     for file in files:
         with open(file) as f:
-            lines = f.read().split('\n')
-            results = grep_n(pattern, lines, flags)
-            if '-l' in flags:
-                if results:
-                    output.append(f'{file}\n')
-            else:
-                file_name = f'{file}:' if len(files) > 1 else ''
-                for i, line in results:
-                    if line != '':
-                        line_number = f'{i}:' if '-n' in flags else ''
-                        output.append(f'{file_name}{line_number}{line}\n')
+            file_name = f'{file}:' if len(files) > 1 else ''
+            for i, line in enumerate(f):
+                if line != '' and matches(pattern, line[:-1], flags):
+                    if '-l' in flags:
+                        output.append(f'{file}\n')
+                        break
+                    else:
+                        line_number = f'{i+1}:' if '-n' in flags else ''
+                        output.append(f'{file_name}{line_number}{line}')
     return ''.join(output)
