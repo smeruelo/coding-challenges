@@ -1,111 +1,93 @@
+# https://exercism.io/my/solutions/bc03e21a029d4573a9a059638e7b2ad0
+
+TOTAL_PINS = 10
+TOTAL_FRAMES = 10
+
+
 class Frame():
-    def __init__(self):
-        self._first = None
-        self._second = None
+    def __init__(self, is_last=False):
+        self._rolls = [None, None, None]
+        self._is_last = is_last
+
+    def _num_rolls(self):
+        return 3 - self._rolls.count(None)
 
     @property
     def first(self):
-        return self._first
+        return self._rolls[0]
 
     @property
     def second(self):
-        return self._second
+        return self._rolls[1]
 
-    def roll(self, pins):
-        raise Exception('Not implemented.')
+    @property
+    def third(self):
+        return self._rolls[2]
 
-    def is_completed(self):
-        raise Exception('Not implemented.')
+    @property
+    def is_last(self):
+        return self._is_last
 
-    def score(self):
-        raise Exception('Not implemented.')
-
-    def _validate_roll(self, pins):
-        if pins < 0 or pins > 10 or self.is_completed():
-            raise Exception('Invalid roll.')
-
-
-class RegularFrame(Frame):
-    def roll(self, pins):
-        self._validate_roll(pins)
-        if self._first is not None:
-            if self._first + pins > 10:
-                raise Exception('Invalid roll.')
-            self._second = pins
-        else:
-            self._first = pins
-
-    def is_completed(self):
-        return self.is_strike() or (self._second is not None)
-
-    def score(self):
-        if not self.is_completed():
-            raise Exception('Frame is not completed yet')
-        return self._first + self._second if self._second else self._first
-
+    @property
     def is_strike(self):
-        return self._first == 10
+        return self.first == TOTAL_PINS
 
+    @property
     def is_spare(self):
-        return self._second is not None and self.score() == 10
+        return not self.is_strike and self._num_rolls() >= 2 and self.first + self.second == TOTAL_PINS
 
-
-class FillBall(Frame):
-    def __init__(self, balls=1):
-        self._balls = balls
-        super().__init__()
+    @property
+    def is_complete(self):
+        if self.is_last and (self.is_strike or self.is_spare):
+            return self._num_rolls() == 3
+        elif self.is_strike:
+            return self._num_rolls() == 1
+        return self._num_rolls() == 2
 
     def roll(self, pins):
-        self._validate_roll(pins)
-        if self._first is None:
-            self._first = pins
-        else:
-            if self._first != 10 and (self._first + pins > 10):
-                raise Exception('Invalid roll.')
-            self._second = pins
+        if self.is_complete:
+            raise Exception('No more rolls are possible for this frame.')
+        if pins < 0 or pins > TOTAL_PINS:
+            raise Exception('Invalid number of pins.')
+        if not self.is_last and self._num_rolls() == 1 and self.first + pins > TOTAL_PINS:
+            raise Exception("There ain't that many pins left.")
+        if self.is_last and self._num_rolls() == 1:
+            if not self.is_strike and self.first + pins > TOTAL_PINS:
+                raise Exception("There ain't that many pins left.")
+        if self.is_last and self._num_rolls() == 2:
+            if self.is_strike and self.second != TOTAL_PINS and self.second + pins > TOTAL_PINS:
+                raise Exception("There ain't that many pins left.")
+        self._rolls[self._num_rolls()] = pins
 
-    def is_completed(self):
-        return (self._first is not None and self._balls == 1) or \
-            (self._first is not None and self._second is not None and self._balls == 2)
-
+    @property
     def score(self):
-        if not self.is_completed():
-            raise Exception('Frame is not completed yet')
-        return self._first if self._balls == 1 else self._first + self._second
+        return sum(filter(bool, self._rolls))
 
 
 class BowlingGame:
     def __init__(self):
-        self._frames = []
-        self._current_frame = RegularFrame()
+        self._frames = [Frame()]
 
     def roll(self, pins):
-        num_frame = len(self._frames) + 1
-        if self._current_frame is None:
+        if self._frames[-1].is_complete:
             raise Exception('Game is already ended.')
-        self._current_frame.roll(pins)
-        if self._current_frame.is_completed():
-            self._frames.append(self._current_frame)
-            if num_frame < 10:
-                self._current_frame = RegularFrame()
-            elif num_frame == 10 and self._frames[-1].is_spare():
-                self._current_frame = FillBall()
-            elif num_frame == 10 and self._frames[-1].is_strike():
-                self._current_frame = FillBall(balls=2)
-            else:
-                self._current_frame = None
+        self._frames[-1].roll(pins)
+        if self._frames[-1].is_complete:
+            if not self._frames[-1].is_last:
+                self._frames.append(Frame(is_last=(len(self._frames) == TOTAL_FRAMES - 1)))
 
     def score(self):
-        if self._current_frame is not None:
+        if len(self._frames) < TOTAL_FRAMES or not self._frames[-1].is_complete:
             raise Exception('Game is in progress.')
         points = 0
-        for i in range(10):
-            frame = self._frames[i]
-            points += frame.score()
-            if frame.is_spare():
-                points += self._frames[i+1].first
-            elif frame.is_strike():
-                points += self._frames[i+1].score()
-                if i < 9 and self._frames[i+1].is_strike():
-                    points += self._frames[i+2].first
+        for i, frame in enumerate(self._frames):
+            points += frame.score
+            if not frame.is_last:
+                if frame.is_spare or frame.is_strike:
+                    points += self._frames[i+1].first
+                if frame.is_strike:
+                    if self._frames[i+1].second:
+                        points += self._frames[i+1].second
+                    else:
+                        points += self._frames[i+2].first
         return points

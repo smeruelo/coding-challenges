@@ -199,6 +199,11 @@ class BowlingTest(unittest.TestCase):
         with self.assertRaisesWithMessage(Exception):
             game.roll(2)
 
+    def test_strike_in_ninth_roll(self):
+        rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 4, 2]
+        game = self.roll_new_game(rolls)
+        self.assertEqual(game.score(), 40)
+
     # Utility functions
     def assertRaisesWithMessage(self, exception):
         return self.assertRaisesRegex(exception, r".+")
