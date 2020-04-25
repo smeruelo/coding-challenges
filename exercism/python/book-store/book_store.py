@@ -8,16 +8,18 @@ DISCOUNTS = [0, 0, 5, 10, 20, 25]
 GROUP_PRICES = [8 * i * (100 - DISCOUNTS[i]) for i in range(len(DISCOUNTS))]
 
 
+def _price(basket):
+    """Returns the price of a basket of books. A basket is a tuple where each element:
+    - represents a group of books
+    - its value is the number of different books that form the group."""
+
+    return sum(GROUP_PRICES[g] for g in basket)
+
+
 def total(books):
     """Calculates the minimum price for a series of books, by checking all the possibilities."""
 
-    def price(basket):
-        """Returns the price of a basket of books. A basket is a tuple where each element:
-        - represents a group of books
-        - its value is the number of different books that form the group."""
-        return sum(GROUP_PRICES[g] for g in basket)
-
-    if len(books) == 0:
+    if not books:
         return 0
 
     # Let's calculate all the possible baskets
@@ -33,4 +35,4 @@ def total(books):
         combos = set(permutations([1]*q + [0]*(num_groups - q), num_groups))
         baskets = set(tuple(sorted(map(add, b, c))) for c in combos for b in baskets)
 
-    return min(map(price, baskets))
+    return min(map(_price, baskets))
