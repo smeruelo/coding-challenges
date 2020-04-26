@@ -9,30 +9,14 @@ def _rail_index(rows):
 
 
 def encode(plain, rows):
-    rails = [[] for _ in range(rows)]
     index_gen = _rail_index(rows)
-    for char in plain:
-        rails[next(index_gen)].append(char)
-    return ''.join(''.join(rail) for rail in rails)
+    return ''.join(sorted(plain, key=lambda _: next(index_gen)))
 
 
 def decode(encoded, rows):
-    def lengths():
-        index_gen = _rail_index(rows)
-        rail_indexes = [next(index_gen) for _ in range(len(encoded))]
-        return (rail_indexes.count(r) for r in range(rows))
-
-    def split(lengths):
-        rails = []
-        begin = 0
-        for l in lengths:
-            rails.append(list(reversed(encoded[begin:begin+l])))
-            begin += l
-        return rails
-
-    rails = split(lengths())
-    decoded = []
     index_gen = _rail_index(rows)
-    for _ in range(len(encoded)):
-        decoded.append(rails[next(index_gen)].pop())
+    indexes = sorted(range(len(encoded)), key=lambda _: next(index_gen))
+    decoded = [''] * len(encoded)
+    for i, char in zip(indexes, encoded):
+        decoded[i] = char
     return ''.join(decoded)
