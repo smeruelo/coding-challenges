@@ -1,3 +1,5 @@
+# https://exercism.io/my/solutions/b6eafe07347347c9b4078b9cf03c92aa
+
 from functools import partial
 from operator import add, sub, mul, floordiv
 
@@ -23,13 +25,13 @@ def push(num, stack):
 
 def math(op, stack):
     arg2, arg1 = pop(stack), pop(stack)
-    stack.append(op(arg1, arg2))
+    push(op(arg1, arg2), stack)
 
 
 def dup(stack):
     last = pop(stack)
-    stack.append(last)
-    stack.append(last)
+    push(last, stack)
+    push(last, stack)
 
 
 def drop(stack):
@@ -38,15 +40,15 @@ def drop(stack):
 
 def swap(stack):
     arg2, arg1 = pop(stack), pop(stack)
-    stack.append(arg2)
-    stack.append(arg1)
+    push(arg2, stack)
+    push(arg1, stack)
 
 
 def over(stack):
     arg2, arg1 = pop(stack), pop(stack)
-    stack.append(arg1)
-    stack.append(arg2)
-    stack.append(arg1)
+    push(arg1, stack)
+    push(arg2, stack)
+    push(arg1, stack)
 
 
 GLOBAL_SYMBOLS = {
