@@ -5,31 +5,42 @@ from operator import add, sub, mul, floordiv
 class StackUnderflowError(Exception):
     pass
 
+
 class ForthSyntaxError(Exception):
     pass
+
 
 def pop(stack):
     try:
         return stack.pop()
     except Exception:
-        raise StackUnderflowError ('Empty stack.')
+        raise StackUnderflowError('Empty stack.')
+
+
+def push(num, stack):
+    stack.append(num)
+
 
 def math(op, stack):
     arg2, arg1 = pop(stack), pop(stack)
     stack.append(op(arg1, arg2))
+
 
 def dup(stack):
     last = pop(stack)
     stack.append(last)
     stack.append(last)
 
+
 def drop(stack):
     pop(stack)
+
 
 def swap(stack):
     arg2, arg1 = pop(stack), pop(stack)
     stack.append(arg2)
     stack.append(arg1)
+
 
 def over(stack):
     arg2, arg1 = pop(stack), pop(stack)
@@ -37,36 +48,18 @@ def over(stack):
     stack.append(arg2)
     stack.append(arg1)
 
-GLOBAL_SYMBOLS = {'+': partial(math, add),
-                  '-': partial(math, sub),
-                  '*': partial(math, mul),
-                  '/': partial(math, floordiv),
-                  'dup': dup,
-                  'drop': drop,
-                  'swap': swap,
-                  'over': over}
 
-def define(tokens, local_symbols):
-    name, *expr = tokens
-    if parse_num(name) is not None:
-        raise StackUnderflowError("Can't redifine literals")
-    local_symbols[name] = expr
+GLOBAL_SYMBOLS = {
+    '+': partial(math, add),
+    '-': partial(math, sub),
+    '*': partial(math, mul),
+    '/': partial(math, floordiv),
+    'dup': dup,
+    'drop': drop,
+    'swap': swap,
+    'over': over
+}
 
-def parse_def(s):
-    s.strip()
-    if s[0] == ':' and s[-1] == ';':
-        tokens = s[1:-2].split()
-        if len(tokens) < 2:
-            raise ForthSyntaxError ('Syntax error')
-        return tokens
-    else:
-        return None
-
-def parse_cmd(token):
-    token = token.lower()
-    if token in GLOBAL_SYMBOLS:
-        return GLOBAL_SYMBOLS[token]
-    return None
 
 def parse_num(token):
     try:
@@ -74,26 +67,48 @@ def parse_num(token):
     except Exception:
         return None
 
-def eval_s(s, stack, local_symbols):
-    if (tokens := parse_def(s)) is not None:
-        define(tokens, local_symbols)
-    else:
-        tokens = s.split()
-        while tokens != []:
-            token = tokens.pop(0)
+
+def parse_def(code, local_symbols):
+    try:
+        name = next(code)
+        if parse_num(name) is not None:
+            raise ValueError("Can't redifine literals.")
+        expr = []
+        while (token := next(code)) != ';':
+            # Every word in local definitions will be a primitive word
             if token in local_symbols:
-                tokens = local_symbols[token] + tokens
-            elif (cmd := parse_cmd(token)) is not None:
-                cmd(stack)
-            elif (num := parse_num(token)) is not None:
-                stack.append(num)
+                expr.extend(local_symbols[token])
             else:
-                raise ForthSyntaxError ('Syntax error')
-    return stack
+                expr.append(token)
+        local_symbols[name] = expr
+    except StopIteration:
+        raise ForthSyntaxError('Syntax error.')
+
+
+def eval_primitive(token, stack):
+    """Evaluates literals or primitive words only."""
+    if (num := parse_num(token)) is not None:
+        push(num, stack)
+    elif token not in GLOBAL_SYMBOLS:
+        raise ValueError(f'Undefined word {token}.')
+    else:
+        GLOBAL_SYMBOLS[token](stack)
+
 
 def evaluate(input_data):
+    # Let's treat source code as an input stream (more like forth really works)
+    code = map(str.lower, ' '.join(input_data).split())
     stack = []
     local_symbols = dict()
-    for s in input_data:
-        stack = eval_s(s, stack, local_symbols)
-    return stack
+    try:
+        while True:
+            token = next(code)
+            if token == ':':
+                parse_def(code, local_symbols)
+            elif token in local_symbols:
+                for t in local_symbols[token]:
+                    eval_primitive(t, stack)
+            else:
+                eval_primitive(token, stack)
+    except StopIteration:
+        return stack
