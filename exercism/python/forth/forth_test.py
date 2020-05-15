@@ -199,5 +199,12 @@ class CaseInsensitivityTest(ForthTest):
         return self.assertRaisesRegex(exception, r".+")
 
 
+class MyTests(ForthTest):
+    def test_definition_in_the_middle_of_an_operation(self):
+        self.assertEqual(evaluate(["3 : foo 7", "; foo +"]), [10])
+
+    def test_definitions_only(self):
+        self.assertEqual(evaluate([": foo 7", "; : bar DUP ;"]), [])
+
 if __name__ == "__main__":
     unittest.main()
