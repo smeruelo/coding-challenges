@@ -1,31 +1,50 @@
+# https://exercism.io/my/solutions/6a51d22a63fe43fba02ec23b622b206c
+
+# This is a (probably lame) FRP approach.
+# Instead of keeping the state of the game inside of the class at every time,
+# I just store the guesses and everything gets calculated when needed
+
+from functools import reduce
+
 STATUS_WIN = "win"
 STATUS_LOSE = "lose"
 STATUS_ONGOING = "ongoing"
 
 
 class Hangman:
+    MAX_GUESSES = 9
+
     def __init__(self, word):
-        self.remaining_guesses = 9
-        self.status = STATUS_ONGOING
-        self.word = word
-        self.guessed = ['_'] * len(word)
+        self._word = word
+        self._guesses = []
+
+    @property
+    def remaining_guesses(self):
+        return self.MAX_GUESSES - self.count_fails()
+
+    def count_fails(self):
+        def f(count, char):
+            already_guessed, fails = count
+            if char in already_guessed or char not in self._word:
+                return (already_guessed, fails + 1)
+            else:
+                return (already_guessed | {char}, fails)
+
+        _, fails = reduce(f, self._guesses, (set(), 0))
+        return fails
 
     def guess(self, char):
-        if self.status != STATUS_ONGOING:
+        if self.get_status() != STATUS_ONGOING:
             raise ValueError('Game is over.')
-        if char not in self.word or char in self.guessed:
-            self.remaining_guesses -= 1
-            if self.remaining_guesses < 0:
-                self.status = STATUS_LOSE
-        else:
-            for i, c in enumerate(self.word):
-                if c == char:
-                    self.guessed[i] = char
-            if self.get_masked_word() == self.word:
-                self.status = STATUS_WIN
+        self._guesses.append(char)
 
     def get_masked_word(self):
-        return ''.join(self.guessed)
+        return ''.join(map(lambda c: c if c in self._guesses else '_' , self._word))
 
     def get_status(self):
-        return self.status
+        if self.get_masked_word() == self._word:
+            return STATUS_WIN
+        elif self.remaining_guesses >= 0:
+            return STATUS_ONGOING
+        else:
+            return STATUS_LOSE
