@@ -1,19 +1,14 @@
-class CustomSet:
-    """Simple implementation of a set, using lists to store the elements.
-    We could reduce the cost O(n * m) to O(max(n, m)) if we kept the elements ordered."""
+# https://exercism.io/my/solutions/c7b96f359d98401a8346025800d91b1d
 
-    # O(n log n)
+from itertools import chain
+
+
+class CustomSet:
+    """Simple implementation of a set, using dictionaries to store the elements."""
+
+    # O(n)
     def __init__(self, elements=[]):
-        if len(elements) == 0:
-            self._elements = []
-            return
-        sorted_elements = sorted(elements)
-        self._elements = [sorted_elements[0]]
-        prev = sorted_elements[0]
-        for e in sorted_elements:
-            if e != prev:
-                self._elements.append(e)
-            prev = e
+        self._elements = {e: None for e in elements}
 
     @property
     def elements(self):
@@ -23,15 +18,15 @@ class CustomSet:
     def isempty(self):
         return len(self.elements) == 0
 
-    # O(n)
+    # O(1)
     def __contains__(self, element):
         return element in self.elements
 
-    # O(n * m)
+    # O(n)
     def issubset(self, other):
         return all(map(lambda e: e in other, self.elements))
 
-    # O(n * m)
+    # O(n)
     def isdisjoint(self, other):
         return self.intersection(other).isempty()
 
@@ -39,22 +34,21 @@ class CustomSet:
     def __eq__(self, other):
         return sorted(self.elements) == sorted(other.elements)
 
-    # O(n)
+    # O(1)
     def add(self, element):
-        if not element in self:
-            self.elements.append(element)
+        self.elements[element] = None
 
-    # O(n * m)
+    # O(n)
     def intersection(self, other):
         return CustomSet([e for e in self.elements if e in other])
 
-    # O(n * m)
+    # O(n)
     def __sub__(self, other):
         return CustomSet([e for e in self.elements if e not in other])
 
-    # O(m)
+    # O(n + m)
     def __add__(self, other):
-        return CustomSet(self.elements + other.elements)
+        return CustomSet(chain(self.elements, other.elements))
 
     def __repr__(self):
-        return '{' + self.elements.__repr__()[1:-1] + '}'
+        return '{' + list(self.elements.keys()).__repr__()[1:-1] + '}'
