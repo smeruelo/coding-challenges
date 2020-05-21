@@ -32,7 +32,7 @@ class CustomSet:
 
     # O(n log n + m log m)
     def __eq__(self, other):
-        return sorted(self.elements) == sorted(other.elements)
+        return self.elements == other.elements
 
     # O(1)
     def add(self, element):
