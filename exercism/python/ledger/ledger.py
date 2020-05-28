@@ -16,7 +16,7 @@ TEXTS = {
     "date": {"en_US": "Date", "nl_NL": "Datum"},
     "description": {"en_US": "Description", "nl_NL": "Omschrijving"},
     "change": {"en_US": "Change", "nl_NL": "Verandering"},
-    "date_separator": {"en_US": "/", "nl_NL": "-"},
+    "date_format": {"en_US": "%m/%d/%Y", "nl_NL": "%d-%m-%Y"},
 #    "": {"en_US": "", "nl_NL": ""},
 }
 
@@ -62,24 +62,7 @@ def format_entries(currency, locale, entries):
             entries.pop(min_entry_index)
 
             # Write entry date to table
-            month = entry.date.month
-            month = str(month)
-            if len(month) < 2:
-                month = '0' + month
-            date_str = month
-            date_str += '/'
-            day = entry.date.day
-            day = str(day)
-            if len(day) < 2:
-                day = '0' + day
-            date_str += day
-            date_str += '/'
-            year = entry.date.year
-            year = str(year)
-            while len(year) < 4:
-                year = '0' + year
-            date_str += year
-            table += date_str
+            table += entry.date.strftime(TEXTS["date_format"][locale])
             table += SEP
 
             # Write entry description to table
@@ -201,24 +184,7 @@ def format_entries(currency, locale, entries):
             entries.pop(min_entry_index)
 
             # Write entry date to table
-            day = entry.date.day
-            day = str(day)
-            if len(day) < 2:
-                day = '0' + day
-            date_str = day
-            date_str += '-'
-            month = entry.date.month
-            month = str(month)
-            if len(month) < 2:
-                month = '0' + month
-            date_str += month
-            date_str += '-'
-            year = entry.date.year
-            year = str(year)
-            while len(year) < 4:
-                year = '0' + year
-            date_str += year
-            table += date_str
+            table += entry.date.strftime(TEXTS["date_format"][locale])
             table += SEP
 
             # Write entry description to table
