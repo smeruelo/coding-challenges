@@ -12,19 +12,24 @@ class LedgerEntry:
 def create_entry(date, description, change):
     return LedgerEntry(datetime.strptime(date, '%Y-%m-%d'), description, change)
 
+TEXTS = {
+    "date": {"en_US": "Date", "nl_NL": "Datum"},
+    "description": {"en_US": "Description", "nl_NL": "Omschrijving"},
+    "change": {"en_US": "Change", "nl_NL": "Verandering"},
+    "date_separator": {"en_US": "/", "nl_NL": "-"},
+#    "": {"en_US": "", "nl_NL": ""},
+}
+
 
 def format_entries(currency, locale, entries):
+    SEP = " | "
     if locale == 'en_US':
         # Generate Header Row
-        table = 'Date'
-        for _ in range(7):
-            table += ' '
-        table += '| Description'
-        for _ in range(15):
-            table += ' '
-        table += '| Change'
-        for _ in range(7):
-            table += ' '
+        table = (
+            f'{TEXTS["date"][locale]:10}{SEP}'
+            f'{TEXTS["description"][locale]:25}{SEP}'
+            f'{TEXTS["change"][locale]:13}'
+        )
 
         while len(entries) > 0:
             table += '\n'
@@ -75,7 +80,7 @@ def format_entries(currency, locale, entries):
                 year = '0' + year
             date_str += year
             table += date_str
-            table += ' | '
+            table += SEP
 
             # Write entry description to table
             # Truncate if necessary
@@ -89,7 +94,7 @@ def format_entries(currency, locale, entries):
                         table += entry.description[i]
                     else:
                         table += ' '
-            table += ' | '
+            table += SEP
 
             # Write entry change to table
             if currency == 'USD':
@@ -159,15 +164,11 @@ def format_entries(currency, locale, entries):
         return table
     elif locale == 'nl_NL':
         # Generate Header Row
-        table = 'Datum'
-        for _ in range(6):
-            table += ' '
-        table += '| Omschrijving'
-        for _ in range(14):
-            table += ' '
-        table += '| Verandering'
-        for _ in range(2):
-            table += ' '
+        table = (
+            f'{TEXTS["date"][locale]:10}{SEP}'
+            f'{TEXTS["description"][locale]:25}{SEP}'
+            f'{TEXTS["change"][locale]:13}'
+        )
 
         while len(entries) > 0:
             table += '\n'
@@ -218,7 +219,7 @@ def format_entries(currency, locale, entries):
                 year = '0' + year
             date_str += year
             table += date_str
-            table += ' | '
+            table += SEP
 
             # Write entry description to table
             # Truncate if necessary
@@ -232,7 +233,7 @@ def format_entries(currency, locale, entries):
                         table += entry.description[i]
                     else:
                         table += ' '
-            table += ' | '
+            table += SEP
 
             # Write entry change to table
             if currency == 'USD':
