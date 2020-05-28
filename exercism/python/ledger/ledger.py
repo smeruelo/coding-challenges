@@ -3,18 +3,14 @@ from datetime import datetime
 
 
 class LedgerEntry:
-    def __init__(self):
-        self.date = None
-        self.description = None
-        self.change = None
+    def __init__(self, date=None, description=None, change=None):
+        self.date = date
+        self.description = description
+        self.change = change
 
 
 def create_entry(date, description, change):
-    entry = LedgerEntry()
-    entry.date = datetime.strptime(date, '%Y-%m-%d')
-    entry.description = description
-    entry.change = change
-    return entry
+    return LedgerEntry(datetime.strptime(date, '%Y-%m-%d'), description, change)
 
 
 def format_entries(currency, locale, entries):
