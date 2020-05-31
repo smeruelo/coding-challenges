@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from decimal import Decimal
 
 
 class LedgerEntry:
@@ -12,13 +13,43 @@ class LedgerEntry:
 def create_entry(date, description, change):
     return LedgerEntry(datetime.strptime(date, '%Y-%m-%d'), description, change)
 
+
 TEXTS = {
     "date": {"en_US": "Date", "nl_NL": "Datum"},
     "description": {"en_US": "Description", "nl_NL": "Omschrijving"},
     "change": {"en_US": "Change", "nl_NL": "Verandering"},
     "date_format": {"en_US": "%m/%d/%Y", "nl_NL": "%d-%m-%Y"},
+    "USD": {"en_US": "$", "nl_NL": "$ "},
+    "EUR": {"en_US": u"€", "nl_NL": u"€ "},
+    "group_sep": {"en_US": ",", "nl_NL": "."},
+    "dec_point": {"en_US": ".", "nl_NL": ","},
+    "neg_sign": {"en_US": "(", "nl_NL": "-"},
+    "neg_trail_sign": {"en_US": ")", "nl_NL": ""},
 #    "": {"en_US": "", "nl_NL": ""},
 }
+
+
+def format_currency(value, currency, locale):
+    num = Decimal(value / 100)
+    sign, digits, exp = num.quantize(Decimal('0.01')).as_tuple()
+
+    sep = TEXTS["group_sep"][locale]
+    def group(s_digits):
+        if len(s_digits) < 3:
+            s_digits = ['0'] * (abs(exp) + 1 - len(s_digits)) + s_digits
+        rev_groups = [s_digits[::-1][i:i+3] for i in range(2, len(s_digits), 3)][::-1]
+        before_coma = sep.join(map(lambda g: ''.join(reversed(g)), rev_groups))
+        after_coma = ''.join(s_digits[-2:])
+        return f"{before_coma}{TEXTS['dec_point'][locale]}{after_coma}"
+
+    s_amount = group(list(map(str, digits)))
+    s_sign = TEXTS["neg_sign"][locale] if sign == 1 else ''
+    s_trail_sign = TEXTS["neg_trail_sign"][locale] if sign == 1 else ''
+    s_curr = TEXTS[currency][locale]
+    if locale == 'en_US':
+        return f'{s_sign}{s_curr}{s_amount}{s_trail_sign}'
+    elif locale == 'nl_NL':
+        return f'{s_curr}{s_sign}{s_amount}'
 
 
 def format_entries(currency, locale, entries):
@@ -84,7 +115,7 @@ def format_entries(currency, locale, entries):
                 change_str = ''
                 if entry.change < 0:
                     change_str = '('
-                change_str += '$'
+                change_str += TEXTS[currency][locale]
                 change_dollar = abs(int(entry.change / 100.0))
                 dollar_parts = []
                 while change_dollar > 0:
@@ -116,7 +147,7 @@ def format_entries(currency, locale, entries):
                 change_str = ''
                 if entry.change < 0:
                     change_str = '('
-                change_str += u'€'
+                change_str += TEXTS[currency][locale]
                 change_euro = abs(int(entry.change / 100.0))
                 euro_parts = []
                 while change_euro > 0:
@@ -203,7 +234,7 @@ def format_entries(currency, locale, entries):
 
             # Write entry change to table
             if currency == 'USD':
-                change_str = '$ '
+                change_str = TEXTS[currency][locale]
                 if entry.change < 0:
                     change_str += '-'
                 change_dollar = abs(int(entry.change / 100.0))
@@ -231,7 +262,7 @@ def format_entries(currency, locale, entries):
                     change_str = ' ' + change_str
                 table += change_str
             elif currency == 'EUR':
-                change_str = u'€ '
+                change_str = TEXTS[currency][locale]
                 if entry.change < 0:
                     change_str += '-'
                 change_euro = abs(int(entry.change / 100.0))
