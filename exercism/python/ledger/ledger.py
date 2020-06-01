@@ -79,16 +79,8 @@ def format_entries(currency, locale, entries):
 
         # Write entry description to table
         # Truncate if necessary
-        if len(entry.description) > 25:
-            for i in range(22):
-                table += entry.description[i]
-            table += '...'
-        else:
-            for i in range(25):
-                if len(entry.description) > i:
-                    table += entry.description[i]
-                else:
-                    table += ' '
+        descr = entry.description[:22] + '...' if len(entry.description) > 25 else entry.description
+        table += f'{descr:25}'
         table += SEP
 
         # Write entry change to table
