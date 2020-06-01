@@ -54,123 +54,62 @@ def format_currency(value, currency, locale):
 
 def format_entries(currency, locale, entries):
     SEP = " | "
-    if locale == 'en_US':
-        # Generate Header Row
-        table = (
-            f'{TEXTS["date"][locale]:10}{SEP}'
-            f'{TEXTS["description"][locale]:25}{SEP}'
-            f'{TEXTS["change"][locale]:13}'
-        )
+    # Generate Header Row
+    table = (
+        f'{TEXTS["date"][locale]:10}{SEP}'
+        f'{TEXTS["description"][locale]:25}{SEP}'
+        f'{TEXTS["change"][locale]:13}'
+    )
 
-        while len(entries) > 0:
-            table += '\n'
+    while len(entries) > 0:
+        table += '\n'
 
-            # Find next entry in order
-            min_entry_index = -1
-            for i in range(len(entries)):
-                entry = entries[i]
-                if min_entry_index < 0:
-                    min_entry_index = i
-                    continue
-                min_entry = entries[min_entry_index]
-                if entry.date < min_entry.date:
-                    min_entry_index = i
-                    continue
-                if (
-                    entry.date == min_entry.date and
-                    entry.change < min_entry.change
-                ):
-                    min_entry_index = i
-                    continue
-                if (
-                    entry.date == min_entry.date and
-                    entry.change == min_entry.change and
-                    entry.description < min_entry.description
-                ):
-                    min_entry_index = i
-                    continue
-            entry = entries[min_entry_index]
-            entries.pop(min_entry_index)
+        # Find next entry in order
+        min_entry_index = -1
+        for i in range(len(entries)):
+            entry = entries[i]
+            if min_entry_index < 0:
+                min_entry_index = i
+                continue
+            min_entry = entries[min_entry_index]
+            if entry.date < min_entry.date:
+                min_entry_index = i
+                continue
+            if (
+                entry.date == min_entry.date and
+                entry.change < min_entry.change
+            ):
+                min_entry_index = i
+                continue
+            if (
+                entry.date == min_entry.date and
+                entry.change == min_entry.change and
+                entry.description < min_entry.description
+            ):
+                min_entry_index = i
+                continue
+        entry = entries[min_entry_index]
+        entries.pop(min_entry_index)
 
-            # Write entry date to table
-            table += entry.date.strftime(TEXTS["date_format"][locale])
-            table += SEP
+        # Write entry date to table
+        table += entry.date.strftime(TEXTS["date_format"][locale])
+        table += SEP
 
-            # Write entry description to table
-            # Truncate if necessary
-            if len(entry.description) > 25:
-                for i in range(22):
+        # Write entry description to table
+        # Truncate if necessary
+        if len(entry.description) > 25:
+            for i in range(22):
+                table += entry.description[i]
+            table += '...'
+        else:
+            for i in range(25):
+                if len(entry.description) > i:
                     table += entry.description[i]
-                table += '...'
-            else:
-                for i in range(25):
-                    if len(entry.description) > i:
-                        table += entry.description[i]
-                    else:
-                        table += ' '
-            table += SEP
+                else:
+                    table += ' '
+        table += SEP
 
-            # Write entry change to table
-            change = format_currency(entry.change, currency, locale)
-            table += f'{change:>13}'
-        return table
-    elif locale == 'nl_NL':
-        # Generate Header Row
-        table = (
-            f'{TEXTS["date"][locale]:10}{SEP}'
-            f'{TEXTS["description"][locale]:25}{SEP}'
-            f'{TEXTS["change"][locale]:13}'
-        )
-
-        while len(entries) > 0:
-            table += '\n'
-
-            # Find next entry in order
-            min_entry_index = -1
-            for i in range(len(entries)):
-                entry = entries[i]
-                if min_entry_index < 0:
-                    min_entry_index = i
-                    continue
-                min_entry = entries[min_entry_index]
-                if entry.date < min_entry.date:
-                    min_entry_index = i
-                    continue
-                if (
-                    entry.date == min_entry.date and
-                    entry.change < min_entry.change
-                ):
-                    min_entry_index = i
-                    continue
-                if (
-                    entry.date == min_entry.date and
-                    entry.change == min_entry.change and
-                    entry.description < min_entry.description
-                ):
-                    min_entry_index = i
-                    continue
-            entry = entries[min_entry_index]
-            entries.pop(min_entry_index)
-
-            # Write entry date to table
-            table += entry.date.strftime(TEXTS["date_format"][locale])
-            table += SEP
-
-            # Write entry description to table
-            # Truncate if necessary
-            if len(entry.description) > 25:
-                for i in range(22):
-                    table += entry.description[i]
-                table += '...'
-            else:
-                for i in range(25):
-                    if len(entry.description) > i:
-                        table += entry.description[i]
-                    else:
-                        table += ' '
-            table += SEP
-
-            # Write entry change to table
-            change = format_currency(entry.change, currency, locale)
-            table += f'{change:>13}'
-        return table
+        # Write entry change to table
+        change = format_currency(entry.change, currency, locale)
+        table += f'{change:>13}'
+    return table
