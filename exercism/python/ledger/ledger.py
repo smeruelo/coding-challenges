@@ -64,7 +64,6 @@ def format_currency(value, currency, locale):
 
 def format_entries(currency, locale, entries):
     SEP = " | "
-    # Generate Header Row
     table = (
         f'{TEXTS["date"][locale]:10}{SEP}'
         f'{TEXTS["description"][locale]:25}{SEP}'
@@ -72,18 +71,8 @@ def format_entries(currency, locale, entries):
     )
 
     for entry in sorted(entries):
-        table += '\n'
-        # Write entry date to table
-        table += entry.date.strftime(TEXTS["date_format"][locale])
-        table += SEP
-
-        # Write entry description to table
-        # Truncate if necessary
+        date = entry.date.strftime(TEXTS["date_format"][locale])
         descr = entry.description[:22] + '...' if len(entry.description) > 25 else entry.description
-        table += f'{descr:25}'
-        table += SEP
-
-        # Write entry change to table
         change = format_currency(entry.change, currency, locale)
-        table += f'{change:>13}'
+        table += f'\n{date:10}{SEP}{descr:25}{SEP}{change:>13}'
     return table
