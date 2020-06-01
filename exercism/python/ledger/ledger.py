@@ -24,7 +24,7 @@ TEXTS = {
     "group_sep": {"en_US": ",", "nl_NL": "."},
     "dec_point": {"en_US": ".", "nl_NL": ","},
     "neg_sign": {"en_US": "(", "nl_NL": "-"},
-    "neg_trail_sign": {"en_US": ")", "nl_NL": ""},
+    "neg_trail_sign": {"en_US": ")", "nl_NL": " "},
 #    "": {"en_US": "", "nl_NL": ""},
 }
 
@@ -44,12 +44,12 @@ def format_currency(value, currency, locale):
 
     s_amount = group(list(map(str, digits)))
     s_sign = TEXTS["neg_sign"][locale] if sign == 1 else ''
-    s_trail_sign = TEXTS["neg_trail_sign"][locale] if sign == 1 else ''
+    s_trail_sign = TEXTS["neg_trail_sign"][locale] if sign == 1 else ' '
     s_curr = TEXTS[currency][locale]
     if locale == 'en_US':
         return f'{s_sign}{s_curr}{s_amount}{s_trail_sign}'
     elif locale == 'nl_NL':
-        return f'{s_curr}{s_sign}{s_amount}'
+        return f'{s_curr}{s_sign}{s_amount}{s_trail_sign}'
 
 
 def format_entries(currency, locale, entries):
@@ -111,70 +111,8 @@ def format_entries(currency, locale, entries):
             table += SEP
 
             # Write entry change to table
-            if currency == 'USD':
-                change_str = ''
-                if entry.change < 0:
-                    change_str = '('
-                change_str += TEXTS[currency][locale]
-                change_dollar = abs(int(entry.change / 100.0))
-                dollar_parts = []
-                while change_dollar > 0:
-                    dollar_parts.insert(0, str(change_dollar % 1000))
-                    change_dollar = change_dollar // 1000
-                if len(dollar_parts) == 0:
-                    change_str += '0'
-                else:
-                    while True:
-                        change_str += dollar_parts[0]
-                        dollar_parts.pop(0)
-                        if len(dollar_parts) == 0:
-                            break
-                        change_str += ','
-                change_str += '.'
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = '0' + change_cents
-                change_str += change_cents
-                if entry.change < 0:
-                    change_str += ')'
-                else:
-                    change_str += ' '
-                while len(change_str) < 13:
-                    change_str = ' ' + change_str
-                table += change_str
-            elif currency == 'EUR':
-                change_str = ''
-                if entry.change < 0:
-                    change_str = '('
-                change_str += TEXTS[currency][locale]
-                change_euro = abs(int(entry.change / 100.0))
-                euro_parts = []
-                while change_euro > 0:
-                    euro_parts.insert(0, str(change_euro % 1000))
-                    change_euro = change_euro // 1000
-                if len(euro_parts) == 0:
-                    change_str += '0'
-                else:
-                    while True:
-                        change_str += euro_parts[0]
-                        euro_parts.pop(0)
-                        if len(euro_parts) == 0:
-                            break
-                        change_str += ','
-                change_str += '.'
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = '0' + change_cents
-                change_str += change_cents
-                if entry.change < 0:
-                    change_str += ')'
-                else:
-                    change_str += ' '
-                while len(change_str) < 13:
-                    change_str = ' ' + change_str
-                table += change_str
+            change = format_currency(entry.change, currency, locale)
+            table += f'{change:>13}'
         return table
     elif locale == 'nl_NL':
         # Generate Header Row
@@ -233,60 +171,6 @@ def format_entries(currency, locale, entries):
             table += SEP
 
             # Write entry change to table
-            if currency == 'USD':
-                change_str = TEXTS[currency][locale]
-                if entry.change < 0:
-                    change_str += '-'
-                change_dollar = abs(int(entry.change / 100.0))
-                dollar_parts = []
-                while change_dollar > 0:
-                    dollar_parts.insert(0, str(change_dollar % 1000))
-                    change_dollar = change_dollar // 1000
-                if len(dollar_parts) == 0:
-                    change_str += '0'
-                else:
-                    while True:
-                        change_str += dollar_parts[0]
-                        dollar_parts.pop(0)
-                        if len(dollar_parts) == 0:
-                            break
-                        change_str += '.'
-                change_str += ','
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = '0' + change_cents
-                change_str += change_cents
-                change_str += ' '
-                while len(change_str) < 13:
-                    change_str = ' ' + change_str
-                table += change_str
-            elif currency == 'EUR':
-                change_str = TEXTS[currency][locale]
-                if entry.change < 0:
-                    change_str += '-'
-                change_euro = abs(int(entry.change / 100.0))
-                euro_parts = []
-                while change_euro > 0:
-                    euro_parts.insert(0, str(change_euro % 1000))
-                    change_euro = change_euro // 1000
-                if len(euro_parts) == 0:
-                    change_str += '0'
-                else:
-                    while True:
-                        change_str += euro_parts[0]
-                        euro_parts.pop(0)
-                        if len(euro_parts) == 0:
-                            break
-                        change_str += '.'
-                change_str += ','
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = '0' + change_cents
-                change_str += change_cents
-                change_str += ' '
-                while len(change_str) < 13:
-                    change_str = ' ' + change_str
-                table += change_str
+            change = format_currency(entry.change, currency, locale)
+            table += f'{change:>13}'
         return table
