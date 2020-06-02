@@ -35,6 +35,29 @@ class SatelliteTest(unittest.TestCase):
         }
         self.assertEqual(tree_from_traversals(preorder, inorder), expected)
 
+    def test_bigger_tree(self):
+        preorder = ["a", "m", "n", "o", "p", "q", "x", "f", "r"]
+        inorder = ["n", "m", "p", "o", "q", "a", "f", "x", "r"]
+
+        expected = {
+            "v": "a",
+            "l": {
+                "v": "m",
+                "l": {"v": "n", "l": {}, "r": {}},
+                "r": {
+                    "v": "o",
+                    "l": {"v": "p", "l": {}, "r": {}},
+                    "r": {"v": "q", "l": {}, "r": {}},
+                },
+            },
+            "r": {
+                "v": "x",
+                "l": {"v": "f", "l": {}, "r": {}},
+                "r": {"v": "r", "l": {}, "r": {}},
+            },
+        }
+        self.assertEqual(tree_from_traversals(preorder, inorder), expected)
+
     def test_reject_traversals_of_different_length(self):
         preorder = ["a", "b"]
         inorder = ["b", "a", "r"]
