@@ -64,4 +64,10 @@ var testCases = []struct {
 		0,
 		true,
 	},
+	{ // utf-8 characters are 3 bytes long
+		"80€",
+		"80E",
+		1,
+		false,
+	},
 }
