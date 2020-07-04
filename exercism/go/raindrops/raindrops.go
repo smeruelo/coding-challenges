@@ -1,20 +1,31 @@
+// https://exercism.io/my/solutions/741b0cefdb5141eeaf2d81ca70adf131
+
 package raindrops
 
 import "strconv"
 
+// Convert returns funny strings
 func Convert(number int) string {
-	var drops = ""
-	if number%3 == 0 {
-		drops += "Pling"
+	type Raindrop struct {
+		factor   int
+		response string
 	}
-	if number%5 == 0 {
-		drops += "Plang"
+
+	raindrops := []Raindrop{
+		{3, "Pling"},
+		{5, "Plang"},
+		{7, "Plong"},
 	}
-	if number%7 == 0 {
-		drops += "Plong"
+
+	output := ""
+	for _, r := range raindrops {
+		if number%r.factor == 0 {
+			output += r.response
+		}
 	}
-	if drops == "" {
+
+	if output == "" {
 		return strconv.Itoa(number)
 	}
-	return drops
+	return output
 }
