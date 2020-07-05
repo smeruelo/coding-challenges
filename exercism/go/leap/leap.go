@@ -1,15 +1,14 @@
-// This is a "stub" file.  It's a little start on your solution.
-// It's not a complete solution though; you have to write some code.
+// https://exercism.io/my/solutions/86f03da6eee94991890115b9e7e0e7b7
 
-// Package leap should have a package comment that summarizes what it's about.
-// https://golang.org/doc/effective_go.html#commentary
+// Package leap provides tools to handle leap years.
 package leap
 
-// IsLeapYear should have a comment documenting it.
-func IsLeapYear(int) bool {
-	// Write some code here to pass the test suite.
-	// Then remove all the stock comments.
-	// They're here to help you get started but they only clutter a finished solution.
-	// If you leave them in, reviewers may protest!
-	return false
+// multiple receives two nums and determines whether the first one is a multiple of the other.
+func multiple(num1 int, num2 int) bool {
+	return num1%num2 == 0
+}
+
+// IsLeapYear returns whether the given year is a leap one or not.
+func IsLeapYear(year int) bool {
+	return multiple(year, 4) && !multiple(year, 100) || multiple(year, 400)
 }
