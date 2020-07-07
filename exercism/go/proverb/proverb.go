@@ -1,16 +1,23 @@
+// https://exercism.io/my/solutions/6fe389266be0414ab8a2416ef78f94de
+
 package proverb
 
 import "fmt"
 
-// Proverb should have a comment documenting it.
+const (
+	regVerse  = "For want of a %s the %s was lost."
+	lastVerse = "And all for the want of a %s."
+)
+
+// Proverb generates a stupid poem from a list of words
 func Proverb(rhyme []string) []string {
 	length := len(rhyme)
-	output := make([]string, length)
-	if length > 0 {
-		for i := 1; i < length; i++ {
-			output[i-1] = fmt.Sprintf("For want of a %s the %s was lost.", rhyme[i-1], rhyme[i])
-		}
-		output[length-1] = fmt.Sprintf("And all for the want of a %s.", rhyme[0])
+	poem := make([]string, length)
+	for i := 1; i < length; i++ {
+		poem[i-1] = fmt.Sprintf(regVerse, rhyme[i-1], rhyme[i])
 	}
-	return output
+	if length > 0 {
+		poem[length-1] = fmt.Sprintf(lastVerse, rhyme[0])
+	}
+	return poem
 }
