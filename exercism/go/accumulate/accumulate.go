@@ -2,13 +2,13 @@
 
 package accumulate
 
-type stringConverter func(s string) string
+type stringConverter func(string) string
 
 // Accumulate applies the given function to each of the strings in an array.
-func Accumulate(collection []string, f stringConverter) []string {
-	result := make([]string, len(collection))
-	for i, s := range collection {
-		result[i] = f(s)
+func Accumulate(in []string, f stringConverter) []string {
+	out := make([]string, len(in))
+	for i, s := range in {
+		out[i] = f(s)
 	}
-	return result
+	return out
 }
