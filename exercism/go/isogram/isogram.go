@@ -10,13 +10,14 @@ import (
 func IsIsogram(text string) bool {
 	appearsInText := make(map[rune]bool)
 	for _, c := range text {
+		if !unicode.IsLetter(c) {
+			continue
+		}
 		c = unicode.ToLower(c)
 		if appearsInText[c] {
 			return false
 		}
-		if unicode.IsLetter(c) {
-			appearsInText[c] = true
-		}
+		appearsInText[c] = true
 	}
 	return true
 }
