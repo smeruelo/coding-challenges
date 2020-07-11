@@ -6,12 +6,12 @@ import "strings"
 
 // Transform takes a translation table in the form points->(letter, letter, ..)
 // and returns a new one in the form letter->points
-func Transform(pointsOld map[int][]string) map[string]int {
-	pointsNew := make(map[string]int)
-	for k, v := range pointsOld {
-		for _, letter := range v {
-			pointsNew[strings.ToLower(letter)] = k
+func Transform(scoreOld map[int][]string) map[string]int {
+	scoreNew := make(map[string]int)
+	for points, letters := range scoreOld {
+		for _, letter := range letters {
+			scoreNew[strings.ToLower(letter)] = points
 		}
 	}
-	return pointsNew
+	return scoreNew
 }
