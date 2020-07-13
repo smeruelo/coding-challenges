@@ -18,7 +18,7 @@ func Valid(s string) bool {
 	mustDouble := len(s)%2 == 0
 	sum := 0
 	for _, char := range s {
-		if !unicode.IsNumber(char) {
+		if !unicode.IsDigit(char) {
 			return false
 		}
 		digit := int(char) - '0'
@@ -27,10 +27,8 @@ func Valid(s string) bool {
 			if digit > 9 {
 				digit -= 9
 			}
-			mustDouble = false
-		} else {
-			mustDouble = true
 		}
+		mustDouble = !mustDouble
 		sum += digit
 	}
 	return sum%10 == 0
