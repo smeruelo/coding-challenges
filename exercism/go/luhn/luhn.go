@@ -7,10 +7,6 @@ import (
 	"unicode"
 )
 
-func runeToInt(r rune) int {
-	return int(r) - '0'
-}
-
 // Valid determines whether a series of digits is valid or not, according to Luhn algorithm
 func Valid(s string) bool {
 	s = strings.ReplaceAll(s, " ", "")
@@ -18,22 +14,24 @@ func Valid(s string) bool {
 		return false
 	}
 
-	// In odd-length strings, odd-position digits will be doubled
-	// In even-length strings, the even-position ones
-	parity := len(s) % 2
+	// In even-length strings, we start by doubling the first digit
+	mustDouble := len(s)%2 == 0
 	sum := 0
-	for i, char := range s {
+	for _, char := range s {
 		if !unicode.IsNumber(char) {
 			return false
 		}
-		addend := runeToInt(char)
-		if i%2 == parity {
-			addend *= 2
-			if addend >= 9 {
-				addend -= 9
+		digit := int(char) - '0'
+		if mustDouble {
+			digit *= 2
+			if digit > 9 {
+				digit -= 9
 			}
+			mustDouble = false
+		} else {
+			mustDouble = true
 		}
-		sum += addend
+		sum += digit
 	}
 	return sum%10 == 0
 }
