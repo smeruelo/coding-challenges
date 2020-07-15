@@ -1,8 +1,13 @@
+// https://exercism.io/my/solutions/d38168727e814b6ebfa1395366a34502
+
 package clock
 
 import "fmt"
 
-const minutesInADay = 1440
+const (
+	minutesInADay   = 1440
+	minutesInAnHour = 60
+)
 
 // modulo returns the unsigned reminder of x/y
 func modulo(x, y int) int {
@@ -17,8 +22,8 @@ type Clock struct {
 
 // New takes an arbitrarly big (or even negative) number of hours and minutes and returns a Clock
 func New(hours, minutes int) Clock {
-	minuteOfDay := modulo(hours*60+minutes, minutesInADay)
-	return Clock{h: minuteOfDay / 60, m: minuteOfDay % 60}
+	minuteOfDay := modulo(hours*minutesInAnHour+minutes, minutesInADay)
+	return Clock{h: minuteOfDay / minutesInAnHour, m: minuteOfDay % minutesInAnHour}
 }
 
 // Add sums the given number of minutes to a Clock and returns a new one
