@@ -2,11 +2,14 @@
 
 package reverse
 
+import "strings"
+
 // Reverse returns a reversed copy of the given string
 func Reverse(s string) string {
-	rev := ""
-	for _, char := range s {
-		rev = string(char) + rev
+	runes := []rune(s)
+	var b strings.Builder
+	for i := len(runes) - 1; i >= 0; i-- {
+		_, _ = b.WriteRune(runes[i])
 	}
-	return rev
+	return b.String()
 }
