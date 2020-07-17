@@ -19,7 +19,7 @@ func Frequency(s string) FreqMap {
 // which are analyzed concurrently.
 func ConcurrentFrequency(texts []string) FreqMap {
 	count := make(FreqMap)
-	ch := make(chan FreqMap)
+	ch := make(chan FreqMap, 10)
 
 	for _, text := range texts {
 		go func(s string) {
