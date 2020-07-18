@@ -27,7 +27,7 @@ func ConcurrentFrequency(texts []string) FreqMap {
 		}(text)
 	}
 
-	for i := 0; i < len(texts); i++ {
+	for range texts {
 		for k, v := range <-ch {
 			count[k] += v
 		}
