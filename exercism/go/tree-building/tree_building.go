@@ -7,58 +7,70 @@ import (
 	"sort"
 )
 
-// Record stores the input data to represent an edge in the tree
+// Record stores the input data to represent an edge in the tree.
 type Record struct {
 	ID     int
 	Parent int
 }
 
-// Node represents a node in the tree
+// records is a sortable collection of Record elements.
+type records []Record
+
+// Len returns the size of a slice []Record.
+func (r records) Len() int {
+	return len(r)
+}
+
+// Less compares two elements of a slice []Record.
+func (r records) Less(i, j int) bool {
+	return r[i].ID <= r[j].ID
+}
+
+// Swap interchanges two elements of a slice []Record.
+func (r records) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
+}
+
+// Node represents a node in the tree.
 type Node struct {
 	ID       int
 	Children []*Node
 }
 
 // Build receives a series of input records an returns a tree
-// For every ID, the IDs of its children are collected.
-// Then, since children have bigger IDs than their parents,
-// the tree can be constructed bottom-up
-func Build(records []Record) (*Node, error) {
+// Input records are sorted. This way, and since children must have bigger IDs than their parents,
+// when going through them in decreasing order all its childrem must have appeared so
+// everything needed to complete the node is available.
+// We can therefore construct the tree bottom-up.
+func Build(r records) (*Node, error) {
 	// If the input data is valid, the tree will have n nodes
-	n := len(records)
+	n := len(r)
 	if n == 0 {
 		return nil, nil
 	}
 
-	// Initialize nodes with an impossible ID,
-	// so we can use it to check for duplicates.
+	sort.Sort(r)
 	nodes := make([]Node, n)
-	for i := 0; i < n; i++ {
-		nodes[i].ID = -1
-	}
-
 	childrenIDs := make([]sort.IntSlice, n)
-	for _, r := range records {
-		if r.ID < 0 || r.ID >= n || r.Parent < 0 || r.Parent >= n {
-			return nil, errors.New("invalid tree (non-continuous")
+
+	for i := n - 1; i >= 0; i-- {
+		// Validate input data
+		if r[i].ID != i {
+			return nil, errors.New("invalid tree")
 		}
-		if r.ID == 0 && r.Parent != 0 {
+		if r[i].ID == 0 && r[i].Parent != 0 {
 			return nil, errors.New("invalid tree (root has parent)")
 		}
-		if r.ID <= r.Parent && r.ID != 0 {
+		if r[i].Parent >= r[i].ID && r[i].ID != 0 {
 			return nil, errors.New("invalid tree (wrong hierarchy)")
 		}
-		if nodes[r.ID].ID != -1 {
-			return nil, errors.New("invalid tree (duplicated node)")
-		}
-		if r.ID != 0 {
-			childrenIDs[r.Parent] = append(childrenIDs[r.Parent], r.ID)
-		}
-		nodes[r.ID].ID = r.ID
-	}
 
-	// Add pointers among nodes.
-	for i := n - 1; i >= 0; i-- {
+		// This node is some other's child (unless it's the root)
+		if r[i].ID != 0 {
+			childrenIDs[r[i].Parent] = append(childrenIDs[r[i].Parent], r[i].ID)
+		}
+		// Current node's children must have already appeared, so we can create node
+		nodes[i].ID = r[i].ID
 		childrenIDs[i].Sort()
 		for _, child := range childrenIDs[i] {
 			nodes[i].Children = append(nodes[i].Children, &nodes[child])
