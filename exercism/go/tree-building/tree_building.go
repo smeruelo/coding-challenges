@@ -20,37 +20,32 @@ type Node struct {
 }
 
 // Build receives a series of input records an returns a tree.
-// Input records are sorted. This way, and since children must have bigger IDs than their parents,
-// when going through them in decreasing order all its children must have appeared so
-// everything needed to complete the node is available.
-// We can therefore construct the tree bottom-up.
-func Build(r []Record) (*Node, error) {
-	// If the input data is valid, the tree will have n nodes
-	n := len(r)
-	if n == 0 {
+func Build(records []Record) (*Node, error) {
+	if len(records) == 0 {
 		return nil, nil
 	}
 
-	sort.Slice(r, func(i, j int) bool { return r[i].ID <= r[j].ID })
-	nodes := make([]Node, n)
+	// Sort input records.
+	// This will ease input data validation and children will be added in order.
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].ID <= records[j].ID
+	})
 
-	for i := n - 1; i >= 0; i-- {
+	nodes := make([]*Node, len(records))
+	for i, r := range records {
 		// Validate input data
-		if r[i].ID != i || r[i].Parent > r[i].ID || r[i].Parent == r[i].ID && r[i].ID != 0 {
+		if r.ID != i || r.Parent > r.ID || r.Parent == r.ID && r.ID != 0 {
 			return nil, errors.New("invalid tree")
 		}
 
-		// Add current node to parent's children
-		p := &nodes[r[i].Parent]
-		if r[i].ID != 0 {
-			p.Children = append(p.Children, &nodes[i])
-		}
+		nodes[i] = &Node{ID: r.ID}
 
-		// Complete current node
-		nodes[i].ID = r[i].ID
-		c := nodes[i].Children
-		sort.Slice(c, func(j, k int) bool { return c[j].ID < c[k].ID })
+		// Add current node to parent's children
+		p := nodes[r.Parent]
+		if r.ID != 0 {
+			p.Children = append(p.Children, nodes[i])
+		}
 	}
 
-	return &nodes[0], nil
+	return nodes[0], nil
 }
