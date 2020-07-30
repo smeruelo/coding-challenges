@@ -12,33 +12,28 @@ import (
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const maxNum = 1000
 
-var names = make([]string, len(letters)*len(letters)*maxNum)
-var ch = make(chan string)
+var numPossibleNames = len(letters) * len(letters) * maxNum
+var usedNames = make(map[string]struct{}, numPossibleNames)
 
 func init() {
-	// Produce all the possible names and shuffle them
-	i := 0
-	for _, l1 := range letters {
-		for _, l2 := range letters {
-			for n := 0; n < maxNum; n++ {
-				names[i] = fmt.Sprintf("%c%c%03d", l1, l2, n)
-				i++
-			}
-		}
-	}
 	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(names), func(i, j int) {
-		names[i], names[j] = names[j], names[i]
-	})
-
-	// Start a generator that will write one name at a time in a channel, until exhausted.
-	go nameGenerator()
 }
 
-func nameGenerator() {
-	defer close(ch)
-	for _, name := range names {
-		ch <- name
+func randomName() (string, error) {
+	if len(usedNames) >= numPossibleNames {
+		return "", errors.New("no more unique names")
+	}
+	for {
+		name := fmt.Sprintf("%c%c%03d",
+			letters[rand.Intn(len(letters))],
+			letters[rand.Intn(len(letters))],
+			rand.Intn(maxNum),
+		)
+		_, ok := usedNames[name]
+		if !ok {
+			usedNames[name] = struct{}{}
+			return name, nil
+		}
 	}
 }
 
@@ -50,11 +45,11 @@ type Robot struct {
 // Name returns a robot's name, assigning it one first if needed.
 func (r *Robot) Name() (string, error) {
 	if r.name == "" {
-		var ok bool
-		r.name, ok = <-ch
-		if !ok {
-			return "", errors.New("no more unique names")
+		name, err := randomName()
+		if err != nil {
+			return "", err
 		}
+		r.name = name
 	}
 	return r.name, nil
 }
