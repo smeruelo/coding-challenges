@@ -30,9 +30,8 @@ func init() {
 	rand.Shuffle(len(names), func(i, j int) {
 		names[i], names[j] = names[j], names[i]
 	})
-	fmt.Println(len(names))
 
-	// Start a generator that will write one name at a time in a channel, until exhausted
+	// Start a generator that will write one name at a time in a channel, until exhausted.
 	go nameGenerator()
 }
 
@@ -43,10 +42,12 @@ func nameGenerator() {
 	}
 }
 
+// Robot represents a named robot
 type Robot struct {
 	name string
 }
 
+// Name returns a robot's name, assigning it one first if needed.
 func (r *Robot) Name() (string, error) {
 	if r.name == "" {
 		var ok bool
@@ -58,6 +59,7 @@ func (r *Robot) Name() (string, error) {
 	return r.name, nil
 }
 
+// Reset clears a robot's name
 func (r *Robot) Reset() {
 	r.name = ""
 }
