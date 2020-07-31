@@ -9,9 +9,7 @@ import (
 	"time"
 )
 
-const maxNum = 1000
-
-var numPossibleNames = 26 * 26 * maxNum
+var numPossibleNames = 26 * 26 * 1000
 var usedNames = map[string]bool{}
 var random = rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -22,16 +20,17 @@ type Robot struct {
 
 // Name returns a robot's name, assigning it one first if needed.
 func (r *Robot) Name() (string, error) {
-	if r.name == "" {
-		if len(usedNames) >= numPossibleNames {
-			return "", errors.New("no more unique names")
-		}
-		r.name = randomName()
-		for usedNames[r.name] {
-			r.name = randomName()
-		}
-		usedNames[r.name] = true
+	if r.name != "" {
+		return r.name, nil
 	}
+	if len(usedNames) >= numPossibleNames {
+		return "", errors.New("no more unique names")
+	}
+	r.name = randomName()
+	for usedNames[r.name] {
+		r.name = randomName()
+	}
+	usedNames[r.name] = true
 	return r.name, nil
 }
 
@@ -42,9 +41,8 @@ func (r *Robot) Reset() {
 
 // randomName returns a pseudo-random string in the form [A-Z][A-Z][0-9][0-9][0-9]
 func randomName() string {
-	return fmt.Sprintf("%c%c%03d",
-		rune(random.Intn(26)+int('A')),
-		rune(random.Intn(26)+int('A')),
-		random.Intn(maxNum),
-	)
+	letter1 := random.Intn(26) + 'A'
+	letter2 := random.Intn(26) + 'A'
+	num := random.Intn(1000)
+	return fmt.Sprintf("%c%c%03d", letter1, letter2, num)
 }
