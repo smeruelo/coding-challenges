@@ -9,33 +9,11 @@ import (
 	"time"
 )
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const maxNum = 1000
 
-var numPossibleNames = len(letters) * len(letters) * maxNum
-var usedNames = make(map[string]struct{}, numPossibleNames)
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-func randomName() (string, error) {
-	if len(usedNames) >= numPossibleNames {
-		return "", errors.New("no more unique names")
-	}
-	for {
-		name := fmt.Sprintf("%c%c%03d",
-			letters[rand.Intn(len(letters))],
-			letters[rand.Intn(len(letters))],
-			rand.Intn(maxNum),
-		)
-		_, ok := usedNames[name]
-		if !ok {
-			usedNames[name] = struct{}{}
-			return name, nil
-		}
-	}
-}
+var numPossibleNames = 26 * 26 * maxNum
+var usedNames = map[string]bool{}
+var random = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // Robot represents a named robot
 type Robot struct {
@@ -45,11 +23,14 @@ type Robot struct {
 // Name returns a robot's name, assigning it one first if needed.
 func (r *Robot) Name() (string, error) {
 	if r.name == "" {
-		name, err := randomName()
-		if err != nil {
-			return "", err
+		if len(usedNames) >= numPossibleNames {
+			return "", errors.New("no more unique names")
 		}
-		r.name = name
+		r.name = randomName()
+		for usedNames[r.name] {
+			r.name = randomName()
+		}
+		usedNames[r.name] = true
 	}
 	return r.name, nil
 }
@@ -57,4 +38,13 @@ func (r *Robot) Name() (string, error) {
 // Reset clears a robot's name
 func (r *Robot) Reset() {
 	r.name = ""
+}
+
+// randomName returns a pseudo-random string in the form [A-Z][A-Z][0-9][0-9][0-9]
+func randomName() string {
+	return fmt.Sprintf("%c%c%03d",
+		rune(random.Intn(26)+int('A')),
+		rune(random.Intn(26)+int('A')),
+		random.Intn(maxNum),
+	)
 }
