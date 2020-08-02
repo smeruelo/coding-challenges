@@ -1,3 +1,5 @@
+// https://exercism.io/my/solutions/9a68f3c1492f4922b0f5090f08966933
+
 package tournament
 
 import (
@@ -23,28 +25,20 @@ var (
 )
 
 // teamResults stores how many matches has a team won/drawn/lost
-type teamResults struct {
-	matches map[matchResult]int
-}
+type teamResults map[matchResult]int
 
-func newTeamResults() teamResults {
-	return teamResults{matches: map[matchResult]int{}}
-}
-
-func (t teamResults) add(result matchResult) {
-	t.matches[result]++
+func (tr teamResults) add(result matchResult) {
+	tr[result]++
 }
 
 // matchesPlayed returns the total number of matches played by a team
-func (t teamResults) matchesPlayed() int {
-	return t.matches[draw] + t.matches[loss] + t.matches[win]
+func (tr teamResults) matchesPlayed() int {
+	return tr[draw] + tr[loss] + tr[win]
 }
 
 // points returns the total number of points obtained by a team
-func (t teamResults) points() int {
-	return t.matches[draw]*points[draw] +
-		t.matches[loss]*points[loss] +
-		t.matches[win]*points[win]
+func (tr teamResults) points() int {
+	return tr[draw]*points[draw] + tr[loss]*points[loss] + tr[win]*points[win]
 }
 
 // readResults reads, validates and process the input data
@@ -65,11 +59,11 @@ func readResults(r io.Reader) (map[string]teamResults, error) {
 			return teams, errors.New("invalid input")
 		}
 		if _, ok := teams[nameTeam1]; !ok {
-			teams[nameTeam1] = newTeamResults()
+			teams[nameTeam1] = teamResults{}
 		}
 		teams[nameTeam1].add(result)
 		if _, ok := teams[nameTeam2]; !ok {
-			teams[nameTeam2] = newTeamResults()
+			teams[nameTeam2] = teamResults{}
 		}
 		teams[nameTeam2].add(oppositeResult[result])
 	}
@@ -112,9 +106,9 @@ func Tally(r io.Reader, w io.Writer) error {
 	teamRow := func(team string) string {
 		results := teams[team]
 		mp := results.matchesPlayed()
-		w := results.matches[win]
-		d := results.matches[draw]
-		l := results.matches[loss]
+		w := results[win]
+		d := results[draw]
+		l := results[loss]
 		p := results.points()
 		return fmt.Sprintf("%-30s | %2d | %2d | %2d | %2d | %2d\n", team, mp, w, d, l, p)
 	}
