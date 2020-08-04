@@ -24,27 +24,20 @@ var (
 	oppositeResult = map[matchResult]matchResult{draw: draw, loss: win, win: loss}
 )
 
-// teamResults stores how many matches has a team won/drawn/lost
-type teamResults map[matchResult]int
-
-func (tr teamResults) add(result matchResult) {
-	tr[result]++
-}
-
-// matchesPlayed returns the total number of matches played by a team
-func (tr teamResults) matchesPlayed() int {
-	return tr[draw] + tr[loss] + tr[win]
-}
-
-// points returns the total number of points obtained by a team
-func (tr teamResults) points() int {
-	return tr[draw]*points[draw] + tr[loss]*points[loss] + tr[win]*points[win]
+// team stores a team's matches' results
+type team struct {
+	matches int
+	draws   int
+	losses  int
+	wins    int
+	points  int
 }
 
 // readResults reads, validates and process the input data
-func readResults(r io.Reader) (map[string]teamResults, error) {
-	teams := map[string]teamResults{}
+func readResults(r io.Reader) (map[string]team, error) {
+	teams := map[string]team{}
 	s := bufio.NewScanner(r)
+
 	for s.Scan() {
 		if s.Text() == "" || s.Text()[0] == '#' {
 			continue
@@ -55,23 +48,33 @@ func readResults(r io.Reader) (map[string]teamResults, error) {
 		}
 		nameTeam1, nameTeam2, r := matchInfo[0], matchInfo[1], matchInfo[2]
 		result := matchResult(r)
-		if result != draw && result != loss && result != win {
+		t1, t2 := teams[nameTeam1], teams[nameTeam2]
+
+		switch result {
+		case draw:
+			t1.draws++
+			t2.draws++
+		case loss:
+			t1.losses++
+			t2.wins++
+		case win:
+			t1.wins++
+			t2.losses++
+		default:
 			return teams, errors.New("invalid input")
 		}
-		if _, ok := teams[nameTeam1]; !ok {
-			teams[nameTeam1] = teamResults{}
-		}
-		teams[nameTeam1].add(result)
-		if _, ok := teams[nameTeam2]; !ok {
-			teams[nameTeam2] = teamResults{}
-		}
-		teams[nameTeam2].add(oppositeResult[result])
+		t1.matches++
+		t2.matches++
+		t1.points += points[result]
+		t2.points += points[oppositeResult[result]]
+		teams[nameTeam1], teams[nameTeam2] = t1, t2
 	}
+
 	return teams, nil
 }
 
 // sortTeams provides a slice of team names, sorted by points and name
-func sortTeams(teams map[string]teamResults) []string {
+func sortTeams(teams map[string]team) []string {
 	names := make([]string, len(teams))
 	i := 0
 	for k := range teams {
@@ -79,8 +82,8 @@ func sortTeams(teams map[string]teamResults) []string {
 		i++
 	}
 	sort.Slice(names, func(i, j int) bool {
-		pointsI := teams[names[i]].points()
-		pointsJ := teams[names[j]].points()
+		pointsI := teams[names[i]].points
+		pointsJ := teams[names[j]].points
 		if pointsI > pointsJ {
 			return true
 		}
@@ -105,11 +108,11 @@ func Tally(r io.Reader, w io.Writer) error {
 
 	teamRow := func(team string) string {
 		results := teams[team]
-		mp := results.matchesPlayed()
-		w := results[win]
-		d := results[draw]
-		l := results[loss]
-		p := results.points()
+		mp := results.matches
+		w := results.wins
+		d := results.draws
+		l := results.losses
+		p := results.points
 		return fmt.Sprintf("%-30s | %2d | %2d | %2d | %2d | %2d\n", team, mp, w, d, l, p)
 	}
 	for _, team := range sortTeams(teams) {
