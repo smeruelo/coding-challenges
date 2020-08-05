@@ -1,10 +1,7 @@
-// https://exercism.io/my/solutions/9a68f3c1492f4922b0f5090f08966933
-
 package tournament
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -53,7 +50,7 @@ func readResults(r io.Reader) (map[string]team, error) {
 			t2.losses++
 			t1.points += 3
 		default:
-			return teams, errors.New("invalid input")
+			return teams, fmt.Errorf("invalid result %q (expected 'draw'|'loss'|'win'", result)
 		}
 		t1.matches++
 		t2.matches++
@@ -87,16 +84,10 @@ func Tally(reader io.Reader, writer io.Writer) error {
 		return err
 	}
 
-	header := "Team                           | MP |  W |  D |  L |  P\n"
-	fmt.Fprintf(writer, header)
+	fmt.Fprintf(writer, "Team                           | MP |  W |  D |  L |  P\n")
 	for _, t := range sortTeams(teams) {
-		name := t.name
-		mp := t.matches
-		w := t.wins
-		d := t.draws
-		l := t.losses
-		p := t.points
-		fmt.Fprintf(writer, "%-30s | %2d | %2d | %2d | %2d | %2d\n", name, mp, w, d, l, p)
+		fmt.Fprintf(writer, "%-30s | %2d | %2d | %2d | %2d | %2d\n",
+			t.name, t.matches, t.wins, t.draws, t.losses, t.points)
 	}
 
 	return nil
