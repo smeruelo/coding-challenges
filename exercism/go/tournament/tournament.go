@@ -27,12 +27,13 @@ func readResults(r io.Reader) (map[string]team, error) {
 	s := bufio.NewScanner(r)
 
 	for s.Scan() {
-		if s.Text() == "" || s.Text()[0] == '#' {
+		line := s.Text()
+		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		matchInfo := strings.Split(s.Text(), ";")
+		matchInfo := strings.Split(line, ";")
 		if len(matchInfo) != 3 {
-			return teams, errors.New("invalid input")
+			return teams, fmt.Errorf("invalid format %q (expected: 'team1;team2;result')", line)
 		}
 		nameTeam1, nameTeam2, result := matchInfo[0], matchInfo[1], matchInfo[2]
 		t1, t2 := teams[nameTeam1], teams[nameTeam2]
@@ -80,29 +81,23 @@ func sortTeams(teams map[string]team) []team {
 }
 
 // Tally reads a series of matches results and pretty prints them
-func Tally(r io.Reader, w io.Writer) error {
-	teams, err := readResults(r)
+func Tally(reader io.Reader, writer io.Writer) error {
+	teams, err := readResults(reader)
 	if err != nil {
 		return err
 	}
 
-	bw := bufio.NewWriter(w)
 	header := "Team                           | MP |  W |  D |  L |  P\n"
-	bw.WriteString(header)
-
-	teamRow := func(t team) string {
+	fmt.Fprintf(writer, header)
+	for _, t := range sortTeams(teams) {
 		name := t.name
 		mp := t.matches
 		w := t.wins
 		d := t.draws
 		l := t.losses
 		p := t.points
-		return fmt.Sprintf("%-30s | %2d | %2d | %2d | %2d | %2d\n", name, mp, w, d, l, p)
-	}
-	for _, t := range sortTeams(teams) {
-		bw.WriteString(teamRow(t))
+		fmt.Fprintf(writer, "%-30s | %2d | %2d | %2d | %2d | %2d\n", name, mp, w, d, l, p)
 	}
 
-	bw.Flush()
 	return nil
 }
