@@ -23,7 +23,6 @@ var (
 		"a Partridge in a Pear Tree.",
 	}
 	ordinals = []string{
-		"",
 		"first",
 		"second",
 		"third",
@@ -37,19 +36,25 @@ var (
 		"eleventh",
 		"twelfth",
 	}
-	intro = "On the %s day of Christmas my true love gave to me: "
+	intro  = "On the %s day of Christmas my true love gave to me: "
+	verses = make([]string, 12)
+	song   string
 )
+
+// Generates every verse and the whole song only once
+func init() {
+	for i := 1; i <= 12; i++ {
+		verses[i-1] = fmt.Sprintf(intro, ordinals[i-1]) + strings.Join(presents[12-i:], "")
+	}
+	song = strings.Join(verses, "\n")
+}
 
 // Verse returns the n-th verse of the Christmas song.
 func Verse(n int) string {
-	return fmt.Sprintf(intro, ordinals[n]) + strings.Join(presents[12-n:], "")
+	return verses[n-1]
 }
 
 // Song returns the (whole) Christmas song.
 func Song() string {
-	verses := make([]string, 12)
-	for i := 1; i <= 12; i++ {
-		verses[i-1] = Verse(i)
-	}
-	return strings.Join(verses, "\n")
+	return song
 }
