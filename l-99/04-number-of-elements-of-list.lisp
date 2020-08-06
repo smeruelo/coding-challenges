@@ -6,8 +6,8 @@
 
 ;; tail-recursive
 (defun count-elements (lst)
-  (defun aux (l c)
-    (if (null l)
-        c
-        (aux (cdr l) (+ c 1))))
-  (aux lst 0))
+  (labels ((aux (l c)
+             (if (null l)
+                 c
+                 (aux (cdr l) (+ c 1)))))
+    (aux lst 0)))

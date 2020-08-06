@@ -7,12 +7,12 @@
           (cons (car lst) (no-consecutive-dups (cdr lst))))))
 
 
-;; tail-recursive
+;; tail-recursive (using accumulator, then reversing it)
 (defun no-consecutive-dups (lst)
-  (defun aux (done pending)
-    (if (null pending)
-        (reverse done)
-        (if (eql (car done) (car pending))
-            (aux done (cdr pending))
-            (aux (cons (car pending) done) (cdr pending)))))
-  (aux () lst))
+  (labels ((aux (done pending)
+             (if (null pending)
+                 (reverse done)
+                 (if (eql (car done) (car pending))
+                     (aux done (cdr pending))
+                     (aux (cons (car pending) done) (cdr pending))))))
+    (aux () lst)))
