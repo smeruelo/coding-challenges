@@ -1,8 +1,8 @@
+// https://exercism.io/my/solutions/69c9306699e043cdb29d1993bc35e68a
+
 package isbn
 
-import (
-	"unicode"
-)
+import "unicode"
 
 func digit(index int, char rune) (int, bool) {
 	if unicode.IsDigit(char) && index <= 9 {
@@ -18,6 +18,7 @@ func IsValidISBN(s string) bool {
 	isbn := [10]int{}
 
 	j := 0
+	checksum := 0
 	for _, r := range s {
 		if r == '-' {
 			continue
@@ -27,15 +28,11 @@ func IsValidISBN(s string) bool {
 			return false
 		}
 		isbn[j] = d
+		checksum += (10 - j) * d
 		j++
 	}
 	if j < 10 {
 		return false
 	}
-
-	check := 0
-	for i, d := range isbn {
-		check += (10 - i) * d
-	}
-	return check%11 == 0
+	return checksum%11 == 0
 }
