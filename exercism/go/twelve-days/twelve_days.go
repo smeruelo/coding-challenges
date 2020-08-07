@@ -2,52 +2,24 @@
 
 package twelve
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 var (
-	presents = []string{
-		"twelve Drummers Drumming, ",
-		"eleven Pipers Piping, ",
-		"ten Lords-a-Leaping, ",
-		"nine Ladies Dancing, ",
-		"eight Maids-a-Milking, ",
-		"seven Swans-a-Swimming, ",
-		"six Geese-a-Laying, ",
-		"five Gold Rings, ",
-		"four Calling Birds, ",
-		"three French Hens, ",
-		"two Turtle Doves, and ",
-		"a Partridge in a Pear Tree.",
+	verses = []string{
+		"On the first day of Christmas my true love gave to me: a Partridge in a Pear Tree.",
+		"On the second day of Christmas my true love gave to me: two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the third day of Christmas my true love gave to me: three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the fourth day of Christmas my true love gave to me: four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the fifth day of Christmas my true love gave to me: five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the sixth day of Christmas my true love gave to me: six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the seventh day of Christmas my true love gave to me: seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the eighth day of Christmas my true love gave to me: eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the ninth day of Christmas my true love gave to me: nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the tenth day of Christmas my true love gave to me: ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the eleventh day of Christmas my true love gave to me: eleven Pipers Piping, ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
+		"On the twelfth day of Christmas my true love gave to me: twelve Drummers Drumming, eleven Pipers Piping, ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree.",
 	}
-	ordinals = []string{
-		"first",
-		"second",
-		"third",
-		"fourth",
-		"fifth",
-		"sixth",
-		"seventh",
-		"eighth",
-		"ninth",
-		"tenth",
-		"eleventh",
-		"twelfth",
-	}
-	intro  = "On the %s day of Christmas my true love gave to me: "
-	verses = make([]string, 12)
-	song   string
 )
-
-// Generates every verse and the whole song only once
-func init() {
-	for i := 1; i <= 12; i++ {
-		verses[i-1] = fmt.Sprintf(intro, ordinals[i-1]) + strings.Join(presents[12-i:], "")
-	}
-	song = strings.Join(verses, "\n")
-}
 
 // Verse returns the n-th verse of the Christmas song.
 func Verse(n int) string {
@@ -56,5 +28,5 @@ func Verse(n int) string {
 
 // Song returns the (whole) Christmas song.
 func Song() string {
-	return song
+	return strings.Join(verses, "\n")
 }
