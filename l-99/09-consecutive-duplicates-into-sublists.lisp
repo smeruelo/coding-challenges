@@ -1,15 +1,14 @@
 ;; 1. tail-recursive (using accumulator, then reversing it) (using temporal sublist)
 (defun pack (lst)
   (labels ((aux (done current pending)
-             (if (null pending)
-                 (reverse done)
-                 (if (eql (car pending) (cadr pending))
-                     (aux done
-                          (cons (car pending) current)
-                          (cdr pending))
-                     (aux (cons (cons (car pending) current) done)
-                          '()
-                          (cdr pending))))))
+             (cond
+               ((null pending) (reverse done))
+               ((eql (car pending) (cadr pending)) (aux done
+                                                        (cons (car pending) current)
+                                                        (cdr pending)))
+               (t (aux (cons (cons (car pending) current) done)
+                       '()
+                       (cdr pending))))))
     (aux '() '() lst)))
 
 
@@ -20,8 +19,7 @@
       '()
       (let ((hd (car lst))
             (packed (pack (cdr lst))))
-        (if (null packed)
-            (list (list hd))
-            (if (eql hd (caar packed))
-                (cons (cons hd (car packed)) (cdr packed))
-                (cons (list hd) packed))))))
+        (cond
+          ((null packed) (list (list hd)))
+          ((eql hd (caar packed)) (cons (cons hd (car packed)) (cdr packed)))
+          (t (cons (list hd) packed))))))
