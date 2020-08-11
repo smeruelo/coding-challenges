@@ -1,3 +1,5 @@
+// https://exercism.io/my/solutions/0e464bb92c684c829edf73bc79a51058
+
 package matrix
 
 import (
@@ -6,21 +8,23 @@ import (
 	"strings"
 )
 
-type matrix [][]int
+// Matrix type represents a two-dimensional slice of integers
+type Matrix [][]int
 
-func (m matrix) height() int {
+func (m Matrix) height() int {
 	return len(m)
 }
 
-func (m matrix) width() int {
+func (m Matrix) width() int {
 	if m.height() > 0 {
 		return len(m[0])
 	}
 	return -1
 }
 
-func New(s string) (matrix, error) {
-	m := matrix{}
+// New creates a Matrix from a string
+func New(s string) (Matrix, error) {
+	m := Matrix{}
 	for i, line := range strings.Split(s, "\n") {
 		rowS := strings.Fields(line)
 		length := len(rowS)
@@ -41,7 +45,8 @@ func New(s string) (matrix, error) {
 	return m, nil
 }
 
-func (m *matrix) Set(row, col, val int) bool {
+// Set sets the value of an specific element of a Matrix (in-place)
+func (m *Matrix) Set(row, col, val int) bool {
 	if row >= 0 && row < m.height() && col >= 0 && col < m.width() {
 		(*m)[row][col] = val
 		return true
@@ -49,32 +54,26 @@ func (m *matrix) Set(row, col, val int) bool {
 	return false
 }
 
-func deepCopy(m matrix) matrix {
-	copiedMatrix := make(matrix, m.height())
+// Rows returns a slice of a Matrix's rows
+func (m Matrix) Rows() [][]int {
+	copiedArray := make([][]int, m.height())
 	for i, row := range m {
 		copiedRow := make([]int, len(row))
 		copy(copiedRow, row)
-		copiedMatrix[i] = copiedRow
+		copiedArray[i] = copiedRow
 	}
-	return copiedMatrix
+	return copiedArray
 }
 
-func transpose(m matrix) matrix {
-	transMatrix := make(matrix, m.width())
+// Cols returns a slice of a Matrix's cols
+func (m Matrix) Cols() [][]int {
+	transArray := make([][]int, m.width())
 	for c := 0; c < m.width(); c++ {
 		transRow := make([]int, m.height())
 		for r := 0; r < m.height(); r++ {
 			transRow[r] = m[r][c]
 		}
-		transMatrix[c] = transRow
+		transArray[c] = transRow
 	}
-	return transMatrix
-}
-
-func (m matrix) Rows() [][]int {
-	return [][]int(deepCopy(m))
-}
-
-func (m matrix) Cols() [][]int {
-	return [][]int(transpose(m))
+	return transArray
 }
