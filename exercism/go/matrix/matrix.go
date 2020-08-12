@@ -24,12 +24,12 @@ func (m Matrix) width() int {
 
 // New creates a Matrix from a string
 func New(s string) (Matrix, error) {
-	m := Matrix{}
-	for i, line := range strings.Split(s, "\n") {
+	lines := strings.Split(s, "\n")
+	m := make(Matrix, len(lines))
+	for i, line := range lines {
 		rowS := strings.Fields(line)
 		length := len(rowS)
 		if i > 0 && length != m.width() {
-			fmt.Println(rowS, length, m.width())
 			return m, fmt.Errorf("invalid input %q (all rows must have equal size)", s)
 		}
 		rowI := make([]int, length)
@@ -40,15 +40,15 @@ func New(s string) (Matrix, error) {
 			}
 			rowI[j] = n
 		}
-		m = append(m, rowI)
+		m[i] = rowI
 	}
 	return m, nil
 }
 
 // Set sets the value of an specific element of a Matrix (in-place)
-func (m *Matrix) Set(row, col, val int) bool {
+func (m Matrix) Set(row, col, val int) bool {
 	if row >= 0 && row < m.height() && col >= 0 && col < m.width() {
-		(*m)[row][col] = val
+		m[row][col] = val
 		return true
 	}
 	return false
