@@ -1,3 +1,5 @@
+# https://exercism.io/my/solutions/13e80c65294d419ca0103d767d44e70c
+
 defmodule NucleotideCount do
   @nucleotides [?A, ?C, ?G, ?T]
 
@@ -14,6 +16,7 @@ defmodule NucleotideCount do
   """
   @spec count(charlist(), char()) :: non_neg_integer()
   def count(strand, nucleotide) do
+	histogram(strand)[nucleotide]
   end
 
   @doc """
@@ -26,5 +29,6 @@ defmodule NucleotideCount do
   """
   @spec histogram(charlist()) :: map()
   def histogram(strand) do
+	Enum.into(Enum.frequencies(strand), Map.new(@nucleotides, fn x -> {x, 0} end))
   end
 end
