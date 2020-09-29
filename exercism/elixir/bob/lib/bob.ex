@@ -2,27 +2,23 @@
 
 defmodule Bob do
   @spec is_question?(String.t()) :: boolean()
-  defp is_question?(sentence) do
-    String.match?(sentence, ~r/\?[[:blank:]]*$/)
-  end
+  def is_question?(s), do: String.ends_with?(s, "?")
 
   @spec is_yell?(String.t()) :: boolean()
-  defp is_yell?(sentence) do
-    String.match?(sentence, ~r/[[:upper:]+]/) and not String.match?(sentence, ~r/[[:lower:]+]/)
-  end
+  defp is_yell?(s), do: String.upcase(s) == s and String.downcase(s) != s
 
   @spec is_empty?(String.t()) :: boolean()
-  defp is_empty?(sentence) do
-    not String.match?(sentence, ~r/[[:alnum:]]+/)
-  end
+  defp is_empty?(s), do: s == ""
 
   @spec hey(String.t()) :: String.t()
   def hey(input) do
+    trimmed = String.trim(input)
+
     cond do
-      is_question?(input) and is_yell?(input) -> "Calm down, I know what I'm doing!"
-      is_question?(input) -> "Sure."
-      is_yell?(input) -> "Whoa, chill out!"
-      is_empty?(input) -> "Fine. Be that way!"
+      is_question?(trimmed) and is_yell?(trimmed) -> "Calm down, I know what I'm doing!"
+      is_question?(trimmed) -> "Sure."
+      is_yell?(trimmed) -> "Whoa, chill out!"
+      is_empty?(trimmed) -> "Fine. Be that way!"
       true -> "Whatever."
     end
   end
