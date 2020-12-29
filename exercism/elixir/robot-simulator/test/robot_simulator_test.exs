@@ -7,7 +7,7 @@ defmodule RobotSimulatorTest do
     assert RobotSimulator.direction(robot) == :north
   end
 
-  @tag :pending
+  # @tag :pending
   test "create works with valid arguments" do
     robot = RobotSimulator.create(:north, {0, 0})
     assert RobotSimulator.position(robot) == {0, 0}
@@ -26,7 +26,7 @@ defmodule RobotSimulatorTest do
     assert RobotSimulator.direction(robot) == :west
   end
 
-  @tag :pending
+  # @tag :pending
   test "create errors if invalid direction given" do
     position = {0, 0}
     invalid_direction = {:error, "invalid direction"}
@@ -36,7 +36,7 @@ defmodule RobotSimulatorTest do
     assert RobotSimulator.create("east", position) == invalid_direction
   end
 
-  @tag :pending
+  # @tag :pending
   test "create errors if invalid position given" do
     direction = :north
     invalid_position = {:error, "invalid position"}
@@ -51,7 +51,7 @@ defmodule RobotSimulatorTest do
     assert RobotSimulator.create(direction, nil) == invalid_position
   end
 
-  @tag :pending
+  # @tag :pending
   test "simulate robots" do
     robot1 = RobotSimulator.create(:north, {0, 0}) |> RobotSimulator.simulate("LAAARALA")
     assert RobotSimulator.direction(robot1) == :west
@@ -66,7 +66,7 @@ defmodule RobotSimulatorTest do
     assert RobotSimulator.position(robot3) == {11, 5}
   end
 
-  @tag :pending
+  # @tag :pending
   test "simulate errors on invalid instructions" do
     assert RobotSimulator.create() |> RobotSimulator.simulate("UUDDLRLRBASTART") ==
              {:error, "invalid instruction"}
