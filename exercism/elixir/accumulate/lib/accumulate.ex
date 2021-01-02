@@ -1,3 +1,5 @@
+# https://exercism.io/my/solutions/ea2c2b4133834c08b9c200d588248df1
+
 defmodule Accumulate do
   @doc """
     Given a list and a function, apply the function to each list item and
@@ -17,5 +19,6 @@ defmodule Accumulate do
 
   @spec accumulate(list, (any -> any)) :: list
   def accumulate(list, fun) do
+    Enum.map(list, fun)
   end
 end
