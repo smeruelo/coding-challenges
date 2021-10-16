@@ -4,6 +4,7 @@
 * [CSES Problem Set](https://cses.fi/problemset/)
 * [euskal{code}](https://www.euskalcode.com)
 * [exercism](https://exercism.io)
+* [foobar](https://foobar.withgoogle.com/)
 * [HackerRank](https://www.hackerrank.com)
 * [L-99 (Ninety-Nine Lisp Problems)](https://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html)
 * [Project Euler](https://projecteuler.net)
