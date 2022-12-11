@@ -88,10 +88,26 @@ defmodule MonkeyInTheMiddle do
         end
       )
 
-    #    IO.puts("\n After round #{round}")
-    #    IO.inspect(inspects)
+    if round in [0, 19, 999, 9999] do
+      IO.puts("\n After round #{round + 1}")
+
+      # with items
+      0..(map_size(monkeys) - 1)
+      |> Enum.map(fn i ->
+        [items | _] = monkeys[i]
+
+        IO.puts("Monkey #{i} has items #{kk(items)} and inspected items #{inspects[i]} times")
+      end)
+
+      # without
+      # 0..(map_size(monkeys) - 1)
+      # |> Enum.map(fn i -> IO.puts("Monkey #{i} inspected items #{inspects[i]} times") end)
+    end
+
     simulate(round + 1, func, monkeys, rounds, inspects)
   end
+
+  def kk(items), do: Enum.join(items, ", ")
 
   def increment_inspects(monkey, amount, inspects) do
     {_, updated_inspects} =
@@ -111,11 +127,16 @@ defmodule MonkeyInTheMiddle do
 
   def play_monkey(i, [item | rest], func, monkeys) do
     [_, op, test, if_true, if_false] = monkeys[i]
-    worry_level = func.(op.(item))
+    worry_level = func.(op.(item), test)
 
     case rem(worry_level, test) == 0 do
-      true -> play_monkey(i, rest, func, throw(worry_level, i, if_true, monkeys))
-      false -> play_monkey(i, rest, func, throw(worry_level, i, if_false, monkeys))
+      true ->
+        # IO.puts("Monkey #{i}, item #{item} -> #{worry_level} -> throw a monkey #{if_true}")
+        play_monkey(i, rest, func, throw(worry_level, i, if_true, monkeys))
+
+      false ->
+        # IO.puts("Monkey #{i}, item #{item} -> #{worry_level} -> throw a monkey #{if_false}")
+        play_monkey(i, rest, func, throw(worry_level, i, if_false, monkeys))
     end
   end
 
@@ -135,6 +156,8 @@ defmodule MonkeyInTheMiddle do
       |> Enum.map(&Tuple.to_list/1)
       |> Enum.sort(&(Enum.at(&1, 1) >= Enum.at(&2, 1)))
 
+    # |> IO.inspect()
+
     Enum.at(first, 1) * Enum.at(second, 1)
   end
 end
@@ -142,5 +165,17 @@ end
 monkeys = MonkeyInTheMiddle.read_input("11_monkey_in_the_middle.input")
 # IO.inspect(monkeys, charlists: :as_lists)
 
-part_1 = MonkeyInTheMiddle.simulate(20, fn x -> div(x, 3) end, monkeys)
-IO.puts("Part 1: #{part_1}")
+# part_1 = MonkeyInTheMiddle.simulate(20, fn x -> div(x, 3) end, monkeys)
+part_1 = MonkeyInTheMiddle.simulate(20, fn x, _test -> div(x, 3) end, monkeys)
+IO.puts("\n\nPart 1: #{part_1}")
+
+# part_2 = MonkeyInTheMiddle.simulate(1000, fn x, test -> Integer.mod(x, test) end, monkeys)
+common_module =
+  monkeys
+  |> Map.to_list()
+  |> Enum.reduce(1, fn {k, [_items, _op, test, _if_true, _if_false]}, acc -> acc * test end)
+
+part_2 =
+  MonkeyInTheMiddle.simulate(10000, fn x, test -> Integer.mod(x, common_module) end, monkeys)
+
+IO.puts("\n\nPart 2: #{part_2}")
